@@ -1,7 +1,9 @@
 """Simple code to test mypy."""
 
+from collections.abc import Iterable, Mapping
 
-def add(a, b):
+
+def add(a: int, b: int) -> int:
     """Compute the sum between two numbers.
 
     Args:
@@ -14,7 +16,7 @@ def add(a, b):
     return a + b
 
 
-def total(numbers):
+def total(numbers: Iterable[int]) -> int:
     """Compute the sum of an iterable of numbers.
 
     Args:
@@ -29,7 +31,7 @@ def total(numbers):
     return total
 
 
-def upper_keys(mapping):
+def upper_keys[T](mapping: Mapping[str, T]) -> dict[str, T]:
     """Create a dictionary with uppercase keys from a given dictionary.
 
     Params:

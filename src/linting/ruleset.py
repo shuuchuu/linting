@@ -18,7 +18,6 @@ class RuleSet[T: Hashable]:
         Args:
             a: Option to add the dependency to.
             b: Dependency.
-
         """
         self.deps[a].add(b)
 
