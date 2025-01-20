@@ -1,9 +1,10 @@
 """Simple code to test mypy."""
 
-from typing import Any
+from collections.abc import Iterable, Mapping
+from typing import Any, Protocol
 
 
-def add(a, b):
+def add(a: int, b: int) -> int:
     """Compute the sum between two numbers.
 
     Args:
@@ -16,7 +17,7 @@ def add(a, b):
     return a + b
 
 
-def total(numbers):
+def total(numbers: Iterable[int]) -> int:
     """Compute the sum of an iterable of numbers.
 
     Args:
@@ -31,7 +32,15 @@ def total(numbers):
     return total
 
 
-def upper_keys(mapping):
+class SupportsUpper[T](Protocol):
+    """Protocol for types that support upper."""
+
+    def upper(self) -> T:
+        """Apply upper on self."""
+        ...
+
+
+def upper_keys[T, U](mapping: Mapping[SupportsUpper[T], U]) -> dict[T, U]:
     """Create a dictionary with uppercase keys from a given dictionary.
 
     Params:
