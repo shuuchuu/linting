@@ -1,0 +1,29 @@
+[project]
+authors = [{name = "m09", email = "142691+m09@users.noreply.github.com"}]
+classifiers = ["License :: OSI Approved :: Apache Software License"]
+description = "Labs on linting in Python."
+name = "linting"
+requires-python = ">= 3.12"
+version = "0.1.0"
+
+[dependency-groups]
+dev = [
+  "mypy >= 1, < 2",
+  "ruff >= 0.9, < 1",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+preview = true
+select = ["E4", "E7", "E9", "F", "B"]
+
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+strict_optional = true
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
