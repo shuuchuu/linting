@@ -1,49 +1,40 @@
 # Linting
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/shuuchuu/linting)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/shuuchuu/linting/tree/main-en)
 
-## Typage des fonctions et classes
+## Function and Class Typing
 
-Utilisez l'outil `ty` pour détecter les erreurs de typage du fichier `code_to_type.py` puis corrigez-les.
+Use the `ty` tool to detect typing errors in the `code_to_type.py` file, then fix them.
+You can run the functions to be typed with the command `python -m linting.code_to_type` in the terminal.
 
-Vous pouvez lancer les fonctions à typer avec la commande `python -m linting.code_to_type` dans le terminal.
+## Defect Detection
 
-## Détection de défauts
+Use the `ruff` tool to detect defects present in the `options.py` file, then fix them.
 
-Utilisez l'outil `ruff` pour détecter les défauts présents dans le fichier `options.py` puis corrigez-les.
+## Overly Complex Code Detection
 
-## Détection de code trop complexe
+`ruff` has a mechanism for detecting overly complex code, based on [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity).
+Edit the `pyproject` configuration file so that the tool detects overly complex functions ([rule C901](https://docs.astral.sh/ruff/rules/#mccabe-c90) & [the related option](https://docs.astral.sh/ruff/settings/#lintmccabe)).
+Find the maximum value that returns an error, then observe the mentioned function.
+You can then set this parameter to a value of `10` for the rest of the practical work.
 
-`ruff` dispose d'un mécanisme de détection de code trop complexe, basé sur la [complexité cyclomatique](https://fr.wikipedia.org/wiki/Nombre_cyclomatique).
+## Code Formatting
 
-Éditez le fichier `pyproject` de configuration pour que l'outil détecte les fonctions trop complexes ([règle C901](https://docs.astral.sh/ruff/rules/#mccabe-c90) & [l'option liée](https://docs.astral.sh/ruff/settings/#lintmccabe)).
+Code formatting wastes a lot of time during code reviews and while writing code. A very interesting option is to delegate this task entirely to a dedicated tool. In Python, `ruff` can handle it.
+In this hands-on lab, `ruff` is already configured to run on every save. Try modifying the code, then observe the result of `ruff` executing when you save.
 
-Trouvez la valeur maximale qui vous renvoie une erreur puis observez la fonction mentionnée.
+## Documentation Quality
 
-Vous pouvez ensuite mettre une valeur de `10` à ce paramètre pour le reste des travaux pratiques.
+Documentation is a very important part of the code.
+To combat documentation drift — the usual progressive obsolescence of documentation relative to the code — it is important to have the right tools.
+Enable the `D` & `DOC` rules in the `ruff` configuration and enable preview mode (`preview = true`).
+Also configure the documentation style to use the `google` style, as explained in the [documentation](https://docs.astral.sh/ruff/settings/#lintpydocstyle).
+Fix any defects you may find.
 
-## Formatage du code
+## Creating a Command That Groups All Checks
 
-Le formatage du code fait perdre beaucoup de temps en revue de code et pendant l'écriture de code. Une option très intéressante et de déléguer complètement cette tâche à un outil dédié. En Python, `ruff` peut s'en charger.
+Create a `dodo.yml` file to use the [doit](https://pydoit.org/index.html) library and specify a task in it to run all the verification tools.
 
-Dans ces travaux pratiques, `ruff` est déjà configuré pour tourner à chaque sauvegarde. Essayez de modifier le code puis observez le résultat de l'exécution de `ruff` quand vous sauvegardez.
+## Solutions on GitHub
 
-## Qualité de la documentation
-
-La documentation est une partie très importante du code.
-
-Pour lutter contre la dérive de la documentation —l'obsolescence progressive usuelle de la documentation par rapport au code— il est important de s'outiller.
-
-Activez les règles `D` & `DOC` dans la configuration de `ruff` et activez le mode preview (`preview = true`).
-
-Configurez aussi le style de la documentation pour utiliser le style `google`, comme expliqué dans la [documentation](https://docs.astral.sh/ruff/settings/#lintpydocstyle).
-
-Corrigez les défauts que vous pourriez relever.
-
-## Création d'une commande qui regroupe toutes les vérifications
-
-Créez un fichier `dodo.yml` pour utiliser la librairie [doit](https://pydoit.org/index.html) et spécifiez-y une tâche pour faire tourner tous les outils de vérification.
-
-## Solutions sur GitHub
-
-Vous trouverez ici les solutions proposées : [branche solution de ce dépôt](https://github.com/shuuchuu/linting/tree/solution).
+You will find the proposed solutions here: [solution branch of this repository](https://github.com/shuuchuu/linting/tree/solution-en).
