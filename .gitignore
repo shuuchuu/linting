@@ -1,0 +1,7 @@
+__pycache__/
+.doit.json
+.ruff_cache/
+.venv/
+.vscode/
+dist/
+*.egg-info

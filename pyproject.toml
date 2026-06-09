@@ -1,0 +1,30 @@
+[project]
+authors = [
+  {name = "m09", email = "142691+m09@users.noreply.github.com"},
+]
+dependencies = []
+description = "Example usage of some of the main Python linting tools."
+homepage = "https://github.com/shuuchuu/linting"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+name = "linting"
+readme = "README.md"
+requires-python = ">= 3.12"
+version = "0.1.0"
+
+[dependency-groups]
+dev = [
+  "doit >= 0.37",
+  "ruff >= 0.11",
+  "ty >= 0.0.33",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["ANN", "E4", "E7", "E9", "F", "I"]
+
+[build-system]
+build-backend = "uv_build"
+requires = ["uv_build>=0.11,<0.12.0"]
