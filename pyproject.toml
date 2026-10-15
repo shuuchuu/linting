@@ -15,7 +15,7 @@ version = "0.1.0"
 [dependency-groups]
 dev = [
   "doit >= 0.37",
-  "ruff >= 0.11",
+  "ruff >= 0.16",
   "ty >= 0.0.33",
 ]
 
@@ -27,4 +27,4 @@ select = ["ANN", "E4", "E7", "E9", "F", "I"]
 
 [build-system]
 build-backend = "uv_build"
-requires = ["uv_build>=0.11,<0.12.0"]
+requires = ["uv_build>=0.12.15,<0.13.0"]

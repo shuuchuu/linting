@@ -1,11 +1,12 @@
 # Changes here will be overwritten by Copier
-_commit: 0.1.2
+_commit: 0.1.5
 _src_path: template
 project_authors:
 - '  {name = "m09", email = "142691+m09@users.noreply.github.com"},'
 project_description: Utilisation des principaux outils d'ingénierie Python
 project_homepage: https://github.com/shuuchuu/linting
 project_id: linting
+project_layout: package
 project_license: Apache-2.0
 project_name: linting
 tools:
