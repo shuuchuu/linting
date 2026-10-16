@@ -40,9 +40,14 @@ Configurez aussi le style de la documentation pour utiliser le style `google`, c
 
 Corrigez les défauts que vous pourriez relever.
 
-## Création d'une commande qui regroupe toutes les vérifications
+## Automatisation des vérifications avec `pre-commit`
 
-Créez un fichier `dodo.yml` pour utiliser la librairie [doit](https://pydoit.org/index.html) et spécifiez-y une tâche pour faire tourner tous les outils de vérification.
+Plutôt que de compter sur chacun pour lancer les vérifications, faites-les tourner à chaque `git commit` avec [`pre-commit`](https://pre-commit.com/) :
+
+1. Créez à la racine du dépôt un fichier `.pre-commit-config.yaml` qui déclare les hooks `ruff-check` (avec l'argument `--fix`) et `ruff-format` du dépôt [`ruff-pre-commit`](https://github.com/astral-sh/ruff-pre-commit), et le hook `ty` du dépôt [`ty-pre-commit`](https://github.com/astral-sh/ty-pre-commit), aux versions (`rev`) de `ruff` et `ty` que vous utilisez.
+2. Installez le hook git avec `uvx pre-commit install`, puis vérifiez tout le dépôt avec `uvx pre-commit run --all-files`.
+3. Ajoutez à `options.py` un import inutilisé et une erreur de typage, puis essayez de commiter : observez le refus, et ce que `ruff` a corrigé seul.
+4. Un hook se contourne (`git commit --no-verify`) : quelle commande lanceriez-vous en intégration continue pour vérifier quand même chaque PR ?
 
 ## Solutions sur GitHub
 
