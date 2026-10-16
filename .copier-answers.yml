@@ -11,4 +11,3 @@ project_license: Apache-2.0
 project_name: linting
 tools:
 - devcontainer
-- doit
