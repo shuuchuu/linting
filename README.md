@@ -31,9 +31,14 @@ Enable the `D` & `DOC` rules in the `ruff` configuration and enable preview mode
 Also configure the documentation style to use the `google` style, as explained in the [documentation](https://docs.astral.sh/ruff/settings/#lintpydocstyle).
 Fix any defects you may find.
 
-## Creating a Command That Groups All Checks
+## Automating the Checks with `pre-commit`
 
-Create a `dodo.yml` file to use the [doit](https://pydoit.org/index.html) library and specify a task in it to run all the verification tools.
+Rather than relying on everyone to run the checks, run them on every `git commit` with [`pre-commit`](https://pre-commit.com/):
+
+1. At the root of the repository, create a `.pre-commit-config.yaml` file that declares the `ruff-check` (with the `--fix` argument) and `ruff-format` hooks of the [`ruff-pre-commit`](https://github.com/astral-sh/ruff-pre-commit) repository, and the `ty` hook of the [`ty-pre-commit`](https://github.com/astral-sh/ty-pre-commit) repository, at the versions (`rev`) of `ruff` and `ty` that you use.
+2. Install the git hook with `uvx pre-commit install`, then check the whole repository with `uvx pre-commit run --all-files`.
+3. Add an unused import and a typing error to `options.py`, then try to commit: observe the refusal, and what `ruff` fixed on its own.
+4. A hook can be bypassed (`git commit --no-verify`): which command would you run in continuous integration to still check every PR?
 
 ## Solutions on GitHub
 
