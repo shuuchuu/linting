@@ -22,7 +22,15 @@ dev = [
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["ANN", "E4", "E7", "E9", "F", "I"]
+preview = true
+select = ["ANN", "C901", "D", "DOC", "E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.mccabe]
+# `remove_dependents` (complexity 5) is flagged up to a maximum of 4.
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 # Without a config, pyrefly falls back to its lenient "basic" preset. With one,
 # it stops treating the project root as an import root, so tests couldn't

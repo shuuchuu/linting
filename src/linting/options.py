@@ -1,7 +1,6 @@
 """Options management."""
 
 from collections.abc import Hashable, Iterable
-from typing import Any
 
 from .ruleset import RuleSet
 
@@ -21,7 +20,7 @@ class Options[T: Hashable]:
     def selection(self) -> set[T]:
         """Return a view of the selected options.
 
-        Yields:
+        Returns:
             Set of selected options.
         """
         return set(self.selected)
@@ -30,20 +29,25 @@ class Options[T: Hashable]:
         """Remove options and their dependents from the selection.
 
         Args:
-            option: Options from which to compute the dependents to remove.
+            options: Options from which to compute the dependents to remove.
         """
         to_remove = set(options)
         done = False
-        while done == False:
+        while not done:
             done = True
             for other_option in self.selected:
                 if to_remove & self.rule_set.compute_deps(other_option):
-                    if not other_option in to_remove:
+                    if other_option not in to_remove:
                         done = False
                     to_remove.add(other_option)
         self.selected -= to_remove
 
     def toggle(self, option: T) -> None:
+        """Toggle an option, with its dependencies and dependents.
+
+        Args:
+            option: Option to toggle.
+        """
         if option in self.selected:
             self.remove_dependents({option})
         else:
