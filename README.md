@@ -1,65 +1,71 @@
-# Typage, détection de défauts, formatage et automatisation avec `pyrefly`, `ruff` et `pre-commit`
+# Typing, defect detection, formatting and automation with `pyrefly`, `ruff` and `pre-commit`
 
-*[English version](https://github.com/shuuchuu/linting/tree/main-en)*
+*[Version française](https://github.com/shuuchuu/linting)*
 
-Le projet des travaux pratiques *Typage, détection de défauts, formatage et
-automatisation*. Leur énoncé est ci-dessous, pour les faire dans un Codespace GitHub ou
-un clone local&nbsp;; c'est le même que celui du notebook des travaux pratiques, en
-[français](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-fr.ipynb)
-ou en
-[anglais](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-en.ipynb),
-qui les fait dans Colab.
+The project of the *Typing, defect detection, formatting and automation* lab. Its
+instructions are below, to run the lab in a GitHub Codespace or a local clone; they are
+the same as the lab's notebook, in
+[English](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-en.ipynb)
+or in
+[French](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-fr.ipynb),
+which runs it in Colab.
 
-Le paquet `linting` (dans `src/linting/`) gère des options qui dépendent les unes des
-autres&nbsp;: `ruleset.py` déclare les dépendances et les conflits, `options.py` tient
-la sélection à jour, et `code_to_type.py` réunit quelques fonctions sans annotations de
-type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `pyrefly`
-(types) et `pre-commit` (leur automatisation).
+The `linting` package (in `src/linting/`) manages options that depend on one another:
+`ruleset.py` declares the dependencies and the conflicts, `options.py` keeps the
+selection up to date, and `code_to_type.py` holds a few functions without type
+annotations. The tools are the course's: `ruff` (defects and formatting), `pyrefly`
+(types) and `pre-commit` (their automation).
 
-## Mise en place de l'environnement de travail
+## Setting up the working environment
 
-Ouvrez le dépôt dans un Codespace&nbsp;: sur GitHub, **Code** > **Codespaces** >
-**Create codespace on main**, ou [ce lien](https://codespaces.new/shuuchuu/linting). Le
-Codespace installe les dépendances à sa création, dans le `.venv` du projet.
+This English version of the lab is the repository's `main-en` branch. Open it in a
+Codespace: on GitHub, on the `main-en` branch, **Code** > **Codespaces** > **Create
+codespace on main-en**, or [this
+link](https://codespaces.new/shuuchuu/linting/tree/main-en). The Codespace installs the
+dependencies when it is created, in the project's `.venv`.
 
-Dans un clone local, installez
-[uv](https://docs.astral.sh/uv/getting-started/installation/), puis lancez `uv sync` à
-la racine du dépôt.
+In a local clone of that branch, install
+[uv](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` at the
+root of the repository:
 
-Les commandes ci-dessous se lancent dans un terminal à la racine du dépôt (**Terminal** >
-**Nouveau terminal** dans le Codespace), avec `uv run`, qui les exécute dans
-l'environnement du projet, aux versions de `ruff` et `pyrefly` que fixe `uv.lock`. Les
-fichiers se modifient dans l'éditeur. Les solutions sont aussi sur la [branche
-`solution`](https://github.com/shuuchuu/linting/tree/solution) du dépôt.
+```console
+git clone -b main-en https://github.com/shuuchuu/linting.git
+cd linting
+uv sync
+```
 
-## Typage des fonctions
+The commands below run in a terminal at the root of the repository (**Terminal** > **New
+Terminal** in the Codespace), through `uv run`, which runs them in the project's
+environment, at the versions of `ruff` and `pyrefly` that `uv.lock` pins. The files are
+edited in the editor. The solutions are also on the repository's [`solution-en`
+branch](https://github.com/shuuchuu/linting/tree/solution-en).
 
-Les fonctions de `src/linting/code_to_type.py` n'ont pas d'annotations de type. Les
-règles `ANN` de `ruff`, que `pyproject.toml` sélectionne, signalent chaque paramètre et
-chaque valeur de retour sans annotation&nbsp;: lancez `uv run ruff check
-src/linting/code_to_type.py`.
+## Typing the functions
 
-Annotez les trois fonctions jusqu'à ce que `ruff` ne signale plus rien dans ce fichier,
-puis vérifiez avec `uv run pyrefly check` que les annotations sont cohérentes avec le code.
-Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`, un appel incorrect,
-`total(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne l'exécution du module (`uv run
-python -m linting.code_to_type`)&nbsp;? Retirez ensuite cet appel.
+The functions of `src/linting/code_to_type.py` have no type annotations. `ruff`'s `ANN`
+rules, which `pyproject.toml` selects, flag every parameter and every return value
+without one: run `uv run ruff check src/linting/code_to_type.py`.
 
-**Documentation utile**
+Annotate the three functions until `ruff` flags nothing in that file any more, then
+check with `uv run pyrefly check` that the annotations agree with the code. Finally, add an
+incorrect call, `total(["1", "2"])`, at the end of the `if __name__ == "__main__":`
+block: what does `pyrefly` report, and what does running the module (`uv run python -m
+linting.code_to_type`) give? Then remove that call.
 
-- https://docs.python.org/fr/3/library/collections.abc.html
-- https://docs.python.org/fr/3/reference/compound_stmts.html#generic-functions
+**Useful documentation**
+
+- https://docs.python.org/3/library/collections.abc.html
+- https://docs.python.org/3/reference/compound_stmts.html#generic-functions
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`add` additionne deux `int`, `total` parcourt des `int` sans avoir besoin d'une liste
-(`Iterable[int]`), et `upper_keys` ne fait que lire un dictionnaire aux clés `str`
-(`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type, que le
-dictionnaire renvoyé conserve&nbsp;: une fonction générique, `def f[T](x: T) -> T`, le
-dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `pyrefly` signale l'appel
-incorrect par une erreur `bad-argument-type`, que l'exécution confirme par une
-`TypeError`.
+`add` adds two `int`s, `total` iterates over `int`s without needing a list
+(`Iterable[int]`), and `upper_keys` only reads a dictionary with `str` keys
+(`Mapping[str, ...]`). Its values can be of any type, which the returned dictionary
+keeps: a generic function, `def f[T](x: T) -> T`, says so. `Iterable` and `Mapping` are
+imported from `collections.abc`. `pyrefly` reports the incorrect call with a
+`bad-argument-type` error, which running it confirms with a `TypeError`.
 
 ```python
 from collections.abc import Iterable, Mapping
@@ -79,7 +85,7 @@ def upper_keys[T](mapping: Mapping[str, T]) -> ...: ...
 <details>
 <summary>Solution</summary>
 
-`src/linting/code_to_type.py`&nbsp;:
+`src/linting/code_to_type.py`:
 
 ```python
 """Simple code to type."""
@@ -143,24 +149,22 @@ uv run pyrefly check
 
 </details>
 
-## Détection de défauts
+## Defect detection
 
-Lancez `uv run ruff check src/linting/options.py`, lisez chaque défaut signalé (son
-code, sa ligne, sa correction proposée), puis corrigez-les. Lesquels `ruff` sait-il
-corriger seul&nbsp;?
+Run `uv run ruff check src/linting/options.py`, read each defect it reports (its code,
+its line, its suggested fix), then fix them. Which ones can `ruff` fix on its own?
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/linter/#fixes
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-Les trois défauts sont un import inutilisé (`F401`), une comparaison à `False` (`E712`)
-et un test d'appartenance écrit `not x in y` (`E713`). `uv run ruff check --fix`
-applique les corrections sûres, marquées `[*]`&nbsp;; celle de `E712` est dite
-dangereuse (`--unsafe-fixes`), car `x == False` et `not x` diffèrent quand `x` n'est
-pas un booléen.
+The three defects are an unused import (`F401`), a comparison to `False` (`E712`) and a
+membership test written `not x in y` (`E713`). `uv run ruff check --fix` applies the
+safe fixes, marked `[*]`; `E712`'s is deemed unsafe (`--unsafe-fixes`), since `x ==
+False` and `not x` differ when `x` isn't a boolean.
 
 ```python
 while not ...:
@@ -174,7 +178,7 @@ while not ...:
 <details>
 <summary>Solution</summary>
 
-`src/linting/options.py`&nbsp;:
+`src/linting/options.py`:
 
 ```python
 """Options management."""
@@ -232,7 +236,7 @@ class Options[T: Hashable]:
             self.selected |= deps
 ```
 
-`ruff check --fix` corrige seul l'import inutilisé et le `not in`.
+`ruff check --fix` fixes the unused import and the `not in` on its own.
 
 ```console
 uv run ruff check src/linting/options.py
@@ -240,28 +244,27 @@ uv run ruff check src/linting/options.py
 
 </details>
 
-## Détection de code trop complexe
+## Detecting overly complex code
 
-`ruff` détecte le code trop complexe d'après sa [complexité
-cyclomatique](https://fr.wikipedia.org/wiki/Nombre_cyclomatique), le nombre de chemins
-indépendants dans une fonction. Dans `pyproject.toml`, ajoutez la règle `C901` aux
-règles sélectionnées, et donnez une valeur à l'option qui fixe la complexité maximale
-admise. Quelle est la plus grande valeur pour laquelle `uv run ruff check` signale une
-erreur, et sur quelle fonction&nbsp;? Observez-la, puis fixez l'option à `10` pour la
-suite des travaux pratiques.
+`ruff` detects overly complex code from its [cyclomatic
+complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity), the number of
+independent paths through a function. In `pyproject.toml`, add the `C901` rule to the
+selected rules, and give a value to the option that sets the maximum complexity
+allowed. What is the largest value for which `uv run ruff check` reports an error, and
+on which function? Look at it, then set the option to `10` for the rest of the lab.
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/rules/complex-structure/
 - https://docs.astral.sh/ruff/settings/#lint_mccabe_max-complexity
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-La règle s'ajoute à la liste `select` de la table `[tool.ruff.lint]`, et l'option se
-règle dans une table `[tool.ruff.lint.mccabe]`. Partez de `1`, qui signale toutes les
-fonctions qui ont au moins un `if` ou une boucle, et augmentez&nbsp;: le message donne
-la complexité de chaque fonction signalée.
+The rule goes in the `select` list of the `[tool.ruff.lint]` table, and the option is
+set in a `[tool.ruff.lint.mccabe]` table. Start from `1`, which flags every function
+with at least one `if` or loop, and increase it: the message gives the complexity of
+each function it flags.
 
 ```toml
 [tool.ruff.lint]
@@ -276,9 +279,9 @@ max-complexity = 1
 <details>
 <summary>Solution</summary>
 
-Jusqu'à `max-complexity = 4`, `ruff` signale `remove_dependents`, dans `options.py`, de
-complexité 5&nbsp;: une boucle `while`, une boucle `for` et deux `if` imbriqués.
-`pyproject.toml`, ensuite&nbsp;:
+Up to `max-complexity = 4`, `ruff` flags `remove_dependents`, in `options.py`, of
+complexity 5: a `while` loop, a `for` loop and two nested `if`s. `pyproject.toml`,
+then:
 
 ```toml
 [tool.ruff.lint]
@@ -295,29 +298,28 @@ uv run ruff check
 
 </details>
 
-## Formatage du code
+## Code formatting
 
-Le formatage du code fait perdre beaucoup de temps, en revue de code comme pendant
-l'écriture. Une option très intéressante est de déléguer complètement cette tâche à un
-outil dédié&nbsp;: en Python, `ruff` peut s'en charger. Dans le Codespace, l'éditeur est
-déjà configuré pour lancer `ruff format` à chaque sauvegarde.
+Formatting code wastes a lot of time, in code reviews as while writing it. A very
+interesting option is to delegate that task entirely to a dedicated tool: in Python,
+`ruff` can take care of it. In the Codespace, the editor is already set to run `ruff
+format` on every save.
 
-Dégradez la mise en forme de `src/linting/rules.py` (des espaces en trop autour d'un
-`=`, des guillemets simples, une longue ligne), puis voyez ce que `uv run ruff format
---diff` propose de changer, et appliquez-le avec `uv run ruff format`. Dans le
-Codespace, sauvegardez aussi le fichier modifié&nbsp;: que se passe-t-il&nbsp;?
+Degrade the layout of `src/linting/rules.py` (extra spaces around an `=`, single quotes,
+a long line), then see what `uv run ruff format --diff` suggests changing, and apply it
+with `uv run ruff format`. In the Codespace, also save the modified file: what happens?
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/formatter/
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`--diff` affiche les changements sans toucher aux fichiers, et `--check` dit seulement
-s'il y en a (c'est ce qu'on lance en intégration continue). Le formateur ne change pas
-ce que fait le code&nbsp;: il réindente, remet les guillemets doubles et coupe les
-lignes de plus de 88 caractères.
+`--diff` shows the changes without touching the files, and `--check` only says whether
+there are any (that's what continuous integration runs). The formatter doesn't change
+what the code does: it reindents, restores double quotes and breaks lines longer than
+88 characters.
 
 ```text
 rs: RuleSet[str]=RuleSet()
@@ -335,34 +337,32 @@ uv run ruff format
 uv run ruff format --check
 ```
 
-Dans le Codespace, la sauvegarde formate le fichier aussitôt (le réglage
-`editor.formatOnSave` de `.devcontainer/devcontainer.json`).
+In the Codespace, saving formats the file at once (the `editor.formatOnSave` setting of
+`.devcontainer/devcontainer.json`).
 
 </details>
 
-## Qualité de la documentation
+## Documentation quality
 
-La documentation est une partie très importante du code. Pour lutter contre la dérive de
-la documentation, son obsolescence progressive par rapport au code, il est important de
-s'outiller.
+Documentation is a very important part of code. To fight documentation drift, its
+gradual obsolescence with respect to the code, tooling matters.
 
-Dans `pyproject.toml`, ajoutez les règles `D` et `DOC` aux règles sélectionnées,
-activez le mode *preview* de `ruff` (`preview = true`, dont les règles `DOC` ont besoin)
-et configurez le style des docstrings pour utiliser le style `google`. Corrigez ensuite
-les défauts que `uv run ruff check` relève.
+In `pyproject.toml`, add the `D` and `DOC` rules to the selected rules, turn on `ruff`'s
+*preview* mode (`preview = true`, which the `DOC` rules need) and set the docstring
+convention to the `google` style. Then fix the defects that `uv run ruff check`
+reports.
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/settings/#lint_preview
 - https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`ruff` relève quatre défauts, tous dans `options.py`&nbsp;: une section `Yields` dans
-une fonction qui renvoie sa valeur (`Returns`), un paramètre documenté sous un autre nom
-que le sien, le même paramètre donc non documenté, et une méthode publique sans
-docstring.
+`ruff` reports four defects, all in `options.py`: a `Yields` section in a function that
+returns its value (`Returns`), a parameter documented under another name than its own,
+the same parameter therefore undocumented, and a public method without a docstring.
 
 ```toml
 [tool.ruff.lint]
@@ -378,7 +378,7 @@ convention = ...
 <details>
 <summary>Solution</summary>
 
-`pyproject.toml`&nbsp;:
+`pyproject.toml`:
 
 ```toml
 [tool.ruff.lint]
@@ -393,7 +393,7 @@ max-complexity = 10
 convention = "google"
 ```
 
-`src/linting/options.py`&nbsp;:
+`src/linting/options.py`:
 
 ```python
 """Options management."""
@@ -462,36 +462,37 @@ uv run ruff check
 
 </details>
 
-## Automatisation des vérifications avec `pre-commit`
+## Automating the checks with `pre-commit`
 
-Plutôt que de compter sur chacun pour lancer les vérifications, faites-les tourner à
-chaque `git commit` avec `pre-commit`&nbsp;:
+Rather than counting on everyone to run the checks, run them on every `git commit` with
+`pre-commit`:
 
-1. Créez à la racine du dépôt un fichier `.pre-commit-config.yaml` qui déclare les hooks
-   `ruff-check` (avec l'argument `--fix`) et `ruff-format` du dépôt `ruff-pre-commit`,
-   et le hook `pyrefly-check` du dépôt `pyrefly-pre-commit`, aux versions (`rev`) de
-   `ruff` et `pyrefly` que vous utilisez.
-2. Installez le hook git avec `uvx pre-commit install`, puis vérifiez tout le dépôt avec
-   `uvx pre-commit run --all-files`.
-3. Ajoutez à `options.py` un import inutilisé et une erreur de typage, puis essayez de
-   commiter&nbsp;: observez le refus, et ce que `ruff` a corrigé seul.
-4. Un hook se contourne (`git commit --no-verify`)&nbsp;: quelle commande lanceriez-vous
-   en intégration continue pour vérifier quand même chaque *pull request*&nbsp;?
+1. At the repository's root, create a `.pre-commit-config.yaml` file declaring the
+   `ruff-check` (with the `--fix` argument) and `ruff-format` hooks of the
+   `ruff-pre-commit` repository, and the `pyrefly-check` hook of the `pyrefly-pre-commit`
+   repository, at the versions (`rev`) of `ruff` and `pyrefly` you use.
+2. Install the git hook with `uvx pre-commit install`, then check the whole repository
+   with `uvx pre-commit run --all-files`.
+3. Add an unused import and a typing error to `options.py`, then try to commit: watch
+   the refusal, and what `ruff` fixed on its own.
+4. A hook can be bypassed (`git commit --no-verify`): what command would you run in
+   continuous integration to check every pull request anyway?
 
-**Documentation utile**
+**Useful documentation**
 
 - https://github.com/astral-sh/ruff-pre-commit
 - https://github.com/facebook/pyrefly-pre-commit
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`uv run ruff --version` et `uv run pyrefly --version` donnent les versions&nbsp;: la
-`rev` du hook de `ruff` est le tag de sa version, préfixé d'un `v`, celle du hook de
-`pyrefly` sa version telle quelle. `pre-commit` installe chaque hook dans un
-environnement à lui, au premier lancement&nbsp;; `pyrefly-check` vérifie tout le projet,
-sans en voir les dépendances (celui-ci n'en a pas). Une erreur de typage s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant
-le commit refusé sont modifiés mais pas indexés&nbsp;: `git add` les ajoute.
+`uv run ruff --version` and `uv run pyrefly --version` give the versions: the `ruff`
+hook's `rev` is its version's tag, prefixed with a `v`, the `pyrefly` hook's its version
+as is. `pre-commit` installs each hook in an environment of its own, on its first run;
+`pyrefly-check` checks the whole project, without seeing its dependencies (this one has
+none). A typing error is for instance `x: int =
+"a"`. The files `ruff` fixed during the refused commit are modified but not staged:
+`git add` stages them.
 
 ```yaml
 repos:
@@ -512,7 +513,7 @@ repos:
 <details>
 <summary>Solution</summary>
 
-`.pre-commit-config.yaml`&nbsp;:
+`.pre-commit-config.yaml`:
 
 ```yaml
 repos:
@@ -532,16 +533,15 @@ repos:
 uvx pre-commit install
 uvx pre-commit run --all-files
 git add --all
-git commit -m "Vérifier le code à chaque commit"
+git commit -m "Check the code on every commit"
 ```
 
-Après l'ajout d'un import inutilisé et de `x: int = "a"` à `options.py`, `git commit -am
-"Essai"` est refusé&nbsp;: `ruff-check` a retiré l'import (le fichier est modifié, à
-indexer de nouveau), et `pyrefly` signale l'erreur de typage (`bad-assignment`), qu'il
-faut corriger à la main.
+After adding an unused import and `x: int = "a"` to `options.py`, `git commit -am "Try"`
+is refused: `ruff-check` removed the import (the file is modified, to stage again), and
+`pyrefly` reports the typing error (`bad-assignment`), to fix by hand.
 
-En intégration continue, `uvx pre-commit run --all-files` lance les mêmes hooks sur
-tout le dépôt, et échoue si l'un d'eux échoue, qu'on ait commité avec `--no-verify` ou
-non.
+In continuous integration, `uvx pre-commit run --all-files` runs the same hooks on the
+whole repository, and fails if one of them fails, whether the commit used `--no-verify`
+or not.
 
 </details>
