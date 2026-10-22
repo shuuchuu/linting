@@ -1,4 +1,4 @@
-"""Simple code to test mypy."""
+"""Simple code to type."""
 
 
 def add(a, b):
