@@ -5,7 +5,7 @@ repos:
       - id: ruff-check
         args: [--fix]
       - id: ruff-format
-  - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.89
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: 1.4.0
     hooks:
-      - id: ty
+      - id: pyrefly-check
