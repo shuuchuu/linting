@@ -1,4 +1,4 @@
-# Typage, détection de défauts, formatage et automatisation avec `ty`, `ruff` et `pre-commit`
+# Typage, détection de défauts, formatage et automatisation avec `pyrefly`, `ruff` et `pre-commit`
 
 *[English version](https://github.com/shuuchuu/linting/tree/main-en)*
 
@@ -13,8 +13,8 @@ qui les fait dans Colab.
 Le paquet `linting` (dans `src/linting/`) gère des options qui dépendent les unes des
 autres&nbsp;: `ruleset.py` déclare les dépendances et les conflits, `options.py` tient
 la sélection à jour, et `code_to_type.py` réunit quelques fonctions sans annotations de
-type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `ty` (types)
-et `pre-commit` (leur automatisation).
+type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `pyrefly`
+(types) et `pre-commit` (leur automatisation).
 
 ## Mise en place de l'environnement de travail
 
@@ -28,7 +28,7 @@ la racine du dépôt.
 
 Les commandes ci-dessous se lancent dans un terminal à la racine du dépôt (**Terminal** >
 **Nouveau terminal** dans le Codespace), avec `uv run`, qui les exécute dans
-l'environnement du projet, aux versions de `ruff` et `ty` que fixe `uv.lock`. Les
+l'environnement du projet, aux versions de `ruff` et `pyrefly` que fixe `uv.lock`. Les
 fichiers se modifient dans l'éditeur. Les solutions sont aussi sur la [branche
 `solution`](https://github.com/shuuchuu/linting/tree/solution) du dépôt.
 
@@ -40,9 +40,9 @@ chaque valeur de retour sans annotation&nbsp;: lancez `uv run ruff check
 src/linting/code_to_type.py`.
 
 Annotez les trois fonctions jusqu'à ce que `ruff` ne signale plus rien dans ce fichier,
-puis vérifiez avec `uv run ty check` que les annotations sont cohérentes avec le code.
+puis vérifiez avec `uv run pyrefly check` que les annotations sont cohérentes avec le code.
 Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`, un appel incorrect,
-`total(["1", "2"])`&nbsp;: que signale `ty`, et que donne l'exécution du module (`uv run
+`total(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne l'exécution du module (`uv run
 python -m linting.code_to_type`)&nbsp;? Retirez ensuite cet appel.
 
 **Documentation utile**
@@ -57,8 +57,8 @@ python -m linting.code_to_type`)&nbsp;? Retirez ensuite cet appel.
 (`Iterable[int]`), et `upper_keys` ne fait que lire un dictionnaire aux clés `str`
 (`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type, que le
 dictionnaire renvoyé conserve&nbsp;: une fonction générique, `def f[T](x: T) -> T`, le
-dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `ty` signale l'appel
-incorrect par une erreur `invalid-argument-type`, que l'exécution confirme par une
+dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `pyrefly` signale l'appel
+incorrect par une erreur `bad-argument-type`, que l'exécution confirme par une
 `TypeError`.
 
 ```python
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
 ```console
 uv run ruff check src/linting/code_to_type.py
-uv run ty check
+uv run pyrefly check
 ```
 
 </details>
@@ -469,8 +469,8 @@ chaque `git commit` avec `pre-commit`&nbsp;:
 
 1. Créez à la racine du dépôt un fichier `.pre-commit-config.yaml` qui déclare les hooks
    `ruff-check` (avec l'argument `--fix`) et `ruff-format` du dépôt `ruff-pre-commit`,
-   et le hook `ty` du dépôt `ty-pre-commit`, aux versions (`rev`) de `ruff` et `ty` que
-   vous utilisez.
+   et le hook `pyrefly-check` du dépôt `pyrefly-pre-commit`, aux versions (`rev`) de
+   `ruff` et `pyrefly` que vous utilisez.
 2. Installez le hook git avec `uvx pre-commit install`, puis vérifiez tout le dépôt avec
    `uvx pre-commit run --all-files`.
 3. Ajoutez à `options.py` un import inutilisé et une erreur de typage, puis essayez de
@@ -481,14 +481,16 @@ chaque `git commit` avec `pre-commit`&nbsp;:
 **Documentation utile**
 
 - https://github.com/astral-sh/ruff-pre-commit
-- https://github.com/astral-sh/ty-pre-commit
+- https://github.com/facebook/pyrefly-pre-commit
 
 <details>
 <summary>Conseils supplémentaires</summary>
 
-`uv run ruff --version` et `uv run ty --version` donnent les versions&nbsp;: la `rev`
-d'un hook est le tag de cette version, préfixé d'un `v`. `pre-commit` installe chaque
-hook dans un environnement à lui, au premier lancement. Une erreur de typage
+`uv run ruff --version` et `uv run pyrefly --version` donnent les versions&nbsp;: la
+`rev` du hook de `ruff` est le tag de sa version, préfixé d'un `v`, celle du hook de
+`pyrefly` sa version telle quelle. `pre-commit` installe chaque hook dans un
+environnement à lui, au premier lancement&nbsp;; `pyrefly-check` vérifie tout le projet,
+avec les dépendances de son `.venv`. Une erreur de typage
 s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant
 le commit refusé sont modifiés mais pas indexés&nbsp;: `git add` les ajoute.
 
@@ -500,10 +502,10 @@ repos:
       - id: ruff-check
         args: [--fix]
       - id: ...
-  - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v...
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: ...
     hooks:
-      - id: ty
+      - id: pyrefly-check
 ```
 
 </details>
@@ -521,10 +523,10 @@ repos:
       - id: ruff-check
         args: [--fix]
       - id: ruff-format
-  - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.89
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: 1.4.0
     hooks:
-      - id: ty
+      - id: pyrefly-check
 ```
 
 ```console
@@ -536,7 +538,8 @@ git commit -m "Vérifier le code à chaque commit"
 
 Après l'ajout d'un import inutilisé et de `x: int = "a"` à `options.py`, `git commit -am
 "Essai"` est refusé&nbsp;: `ruff-check` a retiré l'import (le fichier est modifié, à
-indexer de nouveau), et `ty` signale l'erreur de typage, qu'il faut corriger à la main.
+indexer de nouveau), et `pyrefly` signale l'erreur de typage (`bad-assignment`), qu'il
+faut corriger à la main.
 
 En intégration continue, `uvx pre-commit run --all-files` lance les mêmes hooks sur
 tout le dépôt, et échoue si l'un d'eux échoue, qu'on ait commité avec `--no-verify` ou
