@@ -490,8 +490,7 @@ chaque `git commit` avec `pre-commit`&nbsp;:
 `rev` du hook de `ruff` est le tag de sa version, préfixé d'un `v`, celle du hook de
 `pyrefly` sa version telle quelle. `pre-commit` installe chaque hook dans un
 environnement à lui, au premier lancement&nbsp;; `pyrefly-check` vérifie tout le projet,
-avec les dépendances de son `.venv`. Une erreur de typage
-s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant
+sans en voir les dépendances (celui-ci n'en a pas). Une erreur de typage s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant
 le commit refusé sont modifiés mais pas indexés&nbsp;: `git add` les ajoute.
 
 ```yaml
