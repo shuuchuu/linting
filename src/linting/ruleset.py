@@ -50,7 +50,7 @@ class RuleSet[T: Hashable]:
     def compute_deps(self, option: T) -> set[T]:
         """Compute dependencies of an option.
 
-        Params:
+        Args:
             option: Option to compute the dependencies of.
 
         Returns:

@@ -32,7 +32,7 @@ def total(numbers):
 def upper_keys(mapping):
     """Create a dictionary with uppercase keys from a given dictionary.
 
-    Params:
+    Args:
         mapping: Input mapping
 
     Returns:
