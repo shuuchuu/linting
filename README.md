@@ -16,8 +16,9 @@ la sélection à jour, et `code_to_type.py` réunit quelques fonctions sans anno
 type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `pyrefly`
 (types) et `pre-commit` (leur automatisation).
 
-Les exercices se suivent&nbsp;: `pyproject.toml` s'enrichit de l'un à l'autre, et
-le dernier suppose les précédents faits.
+Les exercices se suivent&nbsp;: le premier, le typage, ne demande que `pyrefly`, puis
+`pyproject.toml` s'enrichit de l'un à l'autre, et le dernier suppose les précédents
+faits.
 
 ## Mise en place de l'environnement de travail
 
@@ -35,6 +36,116 @@ l'environnement du projet, aux versions de `ruff` et `pyrefly` que fixe `uv.lock
 fichiers se modifient dans l'éditeur. Les solutions sont aussi sur la [branche
 `solution`](https://github.com/shuuchuu/linting/tree/solution) du dépôt.
 
+## Typage des fonctions
+
+Les fonctions de `src/linting/code_to_type.py` n'ont pas d'annotations de type.
+Annotez-les, puis vérifiez avec `uv run pyrefly check` que les annotations sont
+cohérentes avec le code. Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`,
+un appel incorrect, `total(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne
+l'exécution du module (`uv run python -m linting.code_to_type`)&nbsp;? Retirez ensuite
+cet appel.
+
+**Documentation utile**
+
+- https://docs.python.org/fr/3/library/collections.abc.html
+- https://docs.python.org/fr/3/reference/compound_stmts.html#generic-functions
+
+<details>
+<summary>Conseils supplémentaires</summary>
+
+`add` additionne deux `int`, `total` parcourt des `int` sans avoir besoin d'une liste
+(`Iterable[int]`), et `upper_keys` ne fait que lire un dictionnaire aux clés `str`
+(`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type, que le
+dictionnaire renvoyé conserve&nbsp;: une fonction générique, `def f[T](x: T) -> T`, le
+dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `pyrefly` signale l'appel
+incorrect par une erreur `bad-argument-type`, que l'exécution confirme par une
+`TypeError`.
+
+```python
+from collections.abc import Iterable, Mapping
+
+
+def add(a: int, b: int) -> int: ...
+
+
+def total(numbers: Iterable[int]) -> int: ...
+
+
+def upper_keys[T](mapping: Mapping[str, T]) -> ...: ...
+```
+
+```console
+uv run pyrefly check
+```
+
+</details>
+
+<details>
+<summary>Solution</summary>
+
+`src/linting/code_to_type.py`&nbsp;:
+
+```python
+"""Simple code to type."""
+
+from collections.abc import Iterable, Mapping
+
+
+def add(a: int, b: int) -> int:
+    """Compute the sum between two numbers.
+
+    Args:
+        a: First number
+        b: Second number
+
+    Returns:
+        Sum of the two numbers.
+    """
+    return a + b
+
+
+def total(numbers: Iterable[int]) -> int:
+    """Compute the sum of an iterable of numbers.
+
+    Args:
+        numbers: Iterable of numbers
+
+    Returns:
+        Sum of the numbers.
+    """
+    total = 0
+    for number in numbers:
+        total += number
+    return total
+
+
+def upper_keys[T](mapping: Mapping[str, T]) -> dict[str, T]:
+    """Create a dictionary with uppercase keys from a given dictionary.
+
+    Args:
+        mapping: Input mapping
+
+    Returns:
+        Dictionary with the uppercase keys.
+    """
+    result = {}
+    for key, value in mapping.items():
+        result[key.upper()] = value
+    return result
+
+
+if __name__ == "__main__":
+    print("add(1, 2) →", add(1, 2))
+    print("total([1, 2, 3]) →", total([1, 2, 3]))
+    print('upper_keys({"a": 1, "b": 2}) →', upper_keys({"a": 1, "b": 2}))
+```
+
+```console
+uv run pyrefly check
+```
+
+</details>
+
 ## Détection de défauts
 
 Lancez `uv run ruff check src/linting/options.py`, lisez chaque défaut signalé (son
@@ -42,9 +153,10 @@ code, sa ligne, sa correction proposée), puis corrigez-les. Lesquels `ruff` sai
 corriger seul&nbsp;?
 
 Tout ne se corrige pas. Dans `pyproject.toml`, ajoutez à la liste `extend-select` la
-famille `T20`, qui signale les `print`, puis lancez `uv run ruff check --ignore ANN`
-(`--ignore ANN` écarte les annotations manquantes, l'objet d'un exercice suivant). Ces
-`print` sont voulus&nbsp;: exemptez-en tout le fichier `rules.py`, qui n'est qu'une
+famille `T20`, qui signale les `print`, puis lancez `uv run ruff check`. Les règles
+`ANN`, que `pyproject.toml` sélectionne déjà, signalent les annotations
+manquantes&nbsp;: elles ne relèvent rien si le premier exercice est complet. Ces `print`
+sont voulus&nbsp;: exemptez-en tout le fichier `rules.py`, qui n'est qu'une
 démonstration, et ignorez ceux de `code_to_type.py` ligne par ligne.
 
 **Documentation utile**
@@ -161,7 +273,7 @@ même commentaire.
 
 ```console
 uv run ruff check --select T20 --add-noqa src/linting/code_to_type.py
-uv run ruff check --ignore ANN
+uv run ruff check
 ```
 
 </details>
@@ -275,8 +387,8 @@ if __name__ == "__main__":
 ```
 
 L'appel resté coupé a une virgule après son dernier argument, la virgule finale
-magique&nbsp;: `ruff format` garde alors un argument par ligne. Pour la table, `# fmt: skip`
-laisse telle quelle l'instruction qu'il termine.
+magique&nbsp;: `ruff format` garde alors un argument par ligne. Pour la table, `# fmt:
+skip` laisse telle quelle l'instruction qu'il termine.
 
 ```console
 uv run ruff format --check
@@ -295,7 +407,7 @@ l'alignement disparaît dès qu'on sauvegarde.
 cyclomatique](https://fr.wikipedia.org/wiki/Nombre_cyclomatique), le nombre de chemins
 indépendants dans une fonction. Dans `pyproject.toml`, ajoutez la règle `C901` aux
 règles sélectionnées, et fixez à `4` l'option qui règle la complexité maximale
-admise&nbsp;: `uv run ruff check --ignore ANN` signale alors une méthode de
+admise&nbsp;: `uv run ruff check` signale alors une méthode de
 `options.py`.
 
 Réécrivez cette méthode pour que `max-complexity = 4` passe, sans changer son
@@ -408,7 +520,7 @@ class Options[T: Hashable]:
 `remove_dependents` n'a plus de boucle `while`, ni de `if` imbriqués.
 
 ```console
-uv run ruff check --ignore ANN
+uv run ruff check
 uv run python -m linting.rules
 ```
 
@@ -423,7 +535,7 @@ s'outiller.
 Dans `pyproject.toml`, ajoutez les règles `D` et `DOC` aux règles sélectionnées, activez
 le mode *preview* de `ruff` (`preview = true`, dont les règles `DOC` ont besoin) et
 configurez le style des docstrings pour utiliser le style `google`. Corrigez ensuite les
-défauts que `uv run ruff check --ignore ANN` relève.
+défauts que `uv run ruff check` relève.
 
 **Documentation utile**
 
@@ -531,124 +643,7 @@ class Options[T: Hashable]:
 ```
 
 ```console
-uv run ruff check --ignore ANN
-```
-
-</details>
-
-## Typage des fonctions
-
-Les fonctions de `src/linting/code_to_type.py` n'ont pas d'annotations de type. Les
-règles `ANN` de `ruff`, que `pyproject.toml` sélectionne, signalent chaque paramètre et
-chaque valeur de retour sans annotation (le mode *preview* les affiche sous leur nom,
-comme `missing-type-function-argument`)&nbsp;: lancez `uv run ruff check
-src/linting/code_to_type.py`.
-
-Annotez les trois fonctions jusqu'à ce que `ruff` ne signale plus rien dans ce fichier,
-puis vérifiez avec `uv run pyrefly check` que les annotations sont cohérentes avec le
-code. Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`, un appel incorrect,
-`total(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne l'exécution du module
-(`uv run python -m linting.code_to_type`)&nbsp;? Retirez ensuite cet appel.
-
-**Documentation utile**
-
-- https://docs.python.org/fr/3/library/collections.abc.html
-- https://docs.python.org/fr/3/reference/compound_stmts.html#generic-functions
-
-<details>
-<summary>Conseils supplémentaires</summary>
-
-`add` additionne deux `int`, `total` parcourt des `int` sans avoir besoin d'une liste
-(`Iterable[int]`), et `upper_keys` ne fait que lire un dictionnaire aux clés `str`
-(`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type, que le
-dictionnaire renvoyé conserve&nbsp;: une fonction générique, `def f[T](x: T) -> T`, le
-dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `pyrefly` signale l'appel
-incorrect par une erreur `bad-argument-type`, que l'exécution confirme par une
-`TypeError`.
-
-```python
-from collections.abc import Iterable, Mapping
-
-
-def add(a: int, b: int) -> int: ...
-
-
-def total(numbers: Iterable[int]) -> int: ...
-
-
-def upper_keys[T](mapping: Mapping[str, T]) -> ...: ...
-```
-
-```python
-!uv run ruff check src/linting/code_to_type.py
-!uv run pyrefly check
-```
-
-</details>
-
-<details>
-<summary>Solution</summary>
-
-`src/linting/code_to_type.py`&nbsp;:
-
-```python
-"""Simple code to type."""
-
-from collections.abc import Iterable, Mapping
-
-
-def add(a: int, b: int) -> int:
-    """Compute the sum between two numbers.
-
-    Args:
-        a: First number
-        b: Second number
-
-    Returns:
-        Sum of the two numbers.
-    """
-    return a + b
-
-
-def total(numbers: Iterable[int]) -> int:
-    """Compute the sum of an iterable of numbers.
-
-    Args:
-        numbers: Iterable of numbers
-
-    Returns:
-        Sum of the numbers.
-    """
-    total = 0
-    for number in numbers:
-        total += number
-    return total
-
-
-def upper_keys[T](mapping: Mapping[str, T]) -> dict[str, T]:
-    """Create a dictionary with uppercase keys from a given dictionary.
-
-    Args:
-        mapping: Input mapping
-
-    Returns:
-        Dictionary with the uppercase keys.
-    """
-    result = {}
-    for key, value in mapping.items():
-        result[key.upper()] = value
-    return result
-
-
-if __name__ == "__main__":
-    print("add(1, 2) →", add(1, 2))  # noqa: T201
-    print("total([1, 2, 3]) →", total([1, 2, 3]))  # noqa: T201
-    print('upper_keys({"a": 1, "b": 2}) →', upper_keys({"a": 1, "b": 2}))  # noqa: T201
-```
-
-```console
 uv run ruff check
-uv run pyrefly check
 ```
 
 </details>
