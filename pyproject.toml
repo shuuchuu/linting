@@ -3,7 +3,7 @@ authors = [
   {name = "m09", email = "142691+m09@users.noreply.github.com"},
 ]
 dependencies = []
-description = "Exemple d'utilisation de quelques-uns des principaux outils de lint de Python."
+description = "Example usage of some of the main Python linting tools."
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 name = "linting"
@@ -23,9 +23,9 @@ dev = [
 [tool.ruff.lint]
 extend-select = ["ANN", "E7"]
 
-# Sans configuration, pyrefly retombe sur son préréglage « basic », indulgent.
-# Avec une configuration, il ne traite plus la racine du projet comme une racine
-# d'import : les tests ne pourraient pas importer tests.conftest sans search-path.
+# Without a config, pyrefly falls back to its lenient "basic" preset. With one,
+# it stops treating the project root as an import root, so tests couldn't
+# import tests.conftest without search-path.
 [tool.pyrefly]
 search-path = ["."]
 
