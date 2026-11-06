@@ -21,7 +21,17 @@ dev = [
 ]
 
 [tool.ruff.lint]
-extend-select = ["ANN", "E7"]
+preview = true
+extend-select = ["ANN", "C901", "D", "DOC", "E7", "T20"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 4
+
+[tool.ruff.lint.per-file-ignores]
+"src/linting/demo.py" = ["T201"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 # Sans configuration, pyrefly retombe sur son préréglage « basic », indulgent.
 # Avec une configuration, il ne traite plus la racine du projet comme une racine

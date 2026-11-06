@@ -1,7 +1,6 @@
 """Gestion des options."""
 
 from collections.abc import Hashable, Iterable
-from typing import Any
 
 from .regles import JeuRegles
 
@@ -21,7 +20,7 @@ class Options[T: Hashable]:
     def selection(self) -> set[T]:
         """Renvoie une vue des options sélectionnées.
 
-        Yields:
+        Returns:
             Ensemble des options sélectionnées.
         """
         return set(self.selectionnees)
@@ -30,20 +29,21 @@ class Options[T: Hashable]:
         """Retire des options et leurs dépendants de la sélection.
 
         Args:
-            option: Options dont calculer les dépendants à retirer.
+            options: Options dont calculer les dépendants à retirer.
         """
         a_retirer = set(options)
-        termine = False
-        while termine == False:
-            termine = True
-            for autre_option in self.selectionnees:
-                if a_retirer & self.jeu_regles.calcule_dependances(autre_option):
-                    if not autre_option in a_retirer:
-                        termine = False
-                    a_retirer.add(autre_option)
-        self.selectionnees -= a_retirer
+        self.selectionnees -= {
+            autre_option
+            for autre_option in self.selectionnees
+            if a_retirer & self.jeu_regles.calcule_dependances(autre_option)
+        }
 
     def bascule(self, option: T) -> None:
+        """Bascule une option, avec ses dépendances et ses dépendants.
+
+        Args:
+            option: Option à basculer.
+        """
         if option in self.selectionnees:
             self.retire_dependants({option})
         else:
