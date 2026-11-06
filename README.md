@@ -11,8 +11,8 @@ ou en
 qui les fait dans Colab.
 
 Le paquet `linting` (dans `src/linting/`) gère des options qui dépendent les unes des
-autres&nbsp;: `ruleset.py` déclare les dépendances et les conflits, `options.py` tient
-la sélection à jour, et `code_to_type.py` réunit quelques fonctions sans annotations de
+autres&nbsp;: `regles.py` déclare les dépendances et les conflits, `options.py` tient la
+sélection à jour, et `code_a_typer.py` réunit quelques fonctions sans annotations de
 type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `pyrefly`
 (types) et `pre-commit` (leur automatisation).
 
@@ -38,11 +38,11 @@ fichiers se modifient dans l'éditeur. Les solutions sont aussi sur la [branche
 
 ## Typage des fonctions
 
-Les fonctions de `src/linting/code_to_type.py` n'ont pas d'annotations de type.
+Les fonctions de `src/linting/code_a_typer.py` n'ont pas d'annotations de type.
 Annotez-les, puis vérifiez avec `uv run pyrefly check` que les annotations sont
 cohérentes avec le code. Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`,
-un appel incorrect, `total(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne
-l'exécution du module (`uv run python -m linting.code_to_type`)&nbsp;? Retirez ensuite
+un appel incorrect, `totalise(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne
+l'exécution du module (`uv run python -m linting.code_a_typer`)&nbsp;? Retirez ensuite
 cet appel.
 
 **Documentation utile**
@@ -53,25 +53,25 @@ cet appel.
 <details>
 <summary>Conseils supplémentaires</summary>
 
-`add` additionne deux `int`, `total` parcourt des `int` sans avoir besoin d'une liste
-(`Iterable[int]`), et `upper_keys` ne fait que lire un dictionnaire aux clés `str`
-(`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type, que le
-dictionnaire renvoyé conserve&nbsp;: une fonction générique, `def f[T](x: T) -> T`, le
-dit. `Iterable` et `Mapping` s'importent de `collections.abc`. `pyrefly` signale l'appel
-incorrect par une erreur `bad-argument-type`, que l'exécution confirme par une
-`TypeError`.
+`additionne` additionne deux `int`, `totalise` parcourt des `int` sans avoir besoin
+d'une liste (`Iterable[int]`), et `met_en_majuscules` ne fait que lire un dictionnaire
+aux clés `str` (`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type,
+que le dictionnaire renvoyé conserve&nbsp;: une fonction générique,
+`def f[T](x: T) -> T`, le dit. `Iterable` et `Mapping` s'importent de `collections.abc`.
+`pyrefly` signale l'appel incorrect par une erreur `bad-argument-type`, que l'exécution
+confirme par une `TypeError`.
 
 ```python
 from collections.abc import Iterable, Mapping
 
 
-def add(a: int, b: int) -> int: ...
+def additionne(a: int, b: int) -> int: ...
 
 
-def total(numbers: Iterable[int]) -> int: ...
+def totalise(nombres: Iterable[int]) -> int: ...
 
 
-def upper_keys[T](mapping: Mapping[str, T]) -> ...: ...
+def met_en_majuscules[T](dictionnaire: Mapping[str, T]) -> ...: ...
 ```
 
 ```console
@@ -83,61 +83,61 @@ uv run pyrefly check
 <details>
 <summary>Solution</summary>
 
-`src/linting/code_to_type.py`&nbsp;:
+`src/linting/code_a_typer.py`&nbsp;:
 
 ```python
-"""Simple code to type."""
+"""Code simple à typer."""
 
 from collections.abc import Iterable, Mapping
 
 
-def add(a: int, b: int) -> int:
-    """Compute the sum between two numbers.
+def additionne(a: int, b: int) -> int:
+    """Calcule la somme de deux nombres.
 
     Args:
-        a: First number
-        b: Second number
+        a: Premier nombre
+        b: Deuxième nombre
 
     Returns:
-        Sum of the two numbers.
+        Somme des deux nombres.
     """
     return a + b
 
 
-def total(numbers: Iterable[int]) -> int:
-    """Compute the sum of an iterable of numbers.
+def totalise(nombres: Iterable[int]) -> int:
+    """Calcule la somme d'un itérable de nombres.
 
     Args:
-        numbers: Iterable of numbers
+        nombres: Itérable de nombres
 
     Returns:
-        Sum of the numbers.
+        Somme des nombres.
     """
     total = 0
-    for number in numbers:
-        total += number
+    for nombre in nombres:
+        total += nombre
     return total
 
 
-def upper_keys[T](mapping: Mapping[str, T]) -> dict[str, T]:
-    """Create a dictionary with uppercase keys from a given dictionary.
+def met_en_majuscules[T](dictionnaire: Mapping[str, T]) -> dict[str, T]:
+    """Crée un dictionnaire aux clés en majuscules à partir d'un dictionnaire donné.
 
     Args:
-        mapping: Input mapping
+        dictionnaire: Dictionnaire d'entrée
 
     Returns:
-        Dictionary with the uppercase keys.
+        Dictionnaire aux clés en majuscules.
     """
-    result = {}
-    for key, value in mapping.items():
-        result[key.upper()] = value
-    return result
+    resultat = {}
+    for cle, valeur in dictionnaire.items():
+        resultat[cle.upper()] = valeur
+    return resultat
 
 
 if __name__ == "__main__":
-    print("add(1, 2) →", add(1, 2))
-    print("total([1, 2, 3]) →", total([1, 2, 3]))
-    print('upper_keys({"a": 1, "b": 2}) →', upper_keys({"a": 1, "b": 2}))
+    print("additionne(1, 2) →", additionne(1, 2))
+    print("totalise([1, 2, 3]) →", totalise([1, 2, 3]))
+    print('met_en_majuscules({"a": 1, "b": 2}) →', met_en_majuscules({"a": 1, "b": 2}))
 ```
 
 ```console
@@ -156,8 +156,8 @@ Tout ne se corrige pas. Dans `pyproject.toml`, ajoutez à la liste `extend-selec
 famille `T20`, qui signale les `print`, puis lancez `uv run ruff check`. Les règles
 `ANN`, que `pyproject.toml` sélectionne déjà, signalent les annotations
 manquantes&nbsp;: elles ne relèvent rien si le premier exercice est complet. Ces `print`
-sont voulus&nbsp;: exemptez-en tout le fichier `rules.py`, qui n'est qu'une
-démonstration, et ignorez ceux de `code_to_type.py` ligne par ligne.
+sont voulus&nbsp;: exemptez-en tout le fichier `demo.py`, qui n'est qu'une
+démonstration, et ignorez ceux de `code_a_typer.py` ligne par ligne.
 
 **Documentation utile**
 
@@ -176,11 +176,11 @@ un booléen.
 ```python
 while not ...:
     ...
-    if other_option not in ...:
+    if autre_option not in ...:
         ...
 ```
 
-`ruff` relève 7 `print` (`T201`)&nbsp;: 4 dans `rules.py`, 3 dans `code_to_type.py`. Le
+`ruff` relève 7 `print` (`T201`)&nbsp;: 4 dans `demo.py`, 3 dans `code_a_typer.py`. Le
 premier fichier s'exempte par `per-file-ignores`, dans une table
 `[tool.ruff.lint.per-file-ignores]`, et chaque `print` du second reçoit `# noqa: T201`
 en fin de ligne.
@@ -190,7 +190,7 @@ en fin de ligne.
 extend-select = ["ANN", "E7", "T20"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/rules.py" = [...]
+"src/linting/demo.py" = [...]
 ```
 
 </details>
@@ -201,59 +201,59 @@ extend-select = ["ANN", "E7", "T20"]
 `src/linting/options.py`&nbsp;:
 
 ```python
-"""Options management."""
+"""Gestion des options."""
 
 from collections.abc import Hashable, Iterable
 
-from .ruleset import RuleSet
+from .regles import JeuRegles
 
 
 class Options[T: Hashable]:
-    """Options management."""
+    """Gestion des options."""
 
-    def __init__(self, rule_set: RuleSet[T]) -> None:
-        """Initialize a set of options.
+    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
+        """Initialise un ensemble d'options.
 
         Args:
-            rule_set: RuleSet to use to model dependencies.
+            jeu_regles: Jeu de règles qui modélise les dépendances.
         """
-        self.rule_set = rule_set
-        self.selected: set[T] = set()
+        self.jeu_regles = jeu_regles
+        self.selectionnees: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Return a view of the selected options.
+        """Renvoie une vue des options sélectionnées.
 
         Yields:
-            Set of selected options.
+            Ensemble des options sélectionnées.
         """
-        return set(self.selected)
+        return set(self.selectionnees)
 
-    def remove_dependents(self, options: Iterable[T]) -> None:
-        """Remove options and their dependents from the selection.
+    def retire_dependants(self, options: Iterable[T]) -> None:
+        """Retire des options et leurs dépendants de la sélection.
 
         Args:
-            option: Options from which to compute the dependents to remove.
+            option: Options dont calculer les dépendants à retirer.
         """
-        to_remove = set(options)
-        done = False
-        while not done:
-            done = True
-            for other_option in self.selected:
-                if to_remove & self.rule_set.compute_deps(other_option):
-                    if other_option not in to_remove:
-                        done = False
-                    to_remove.add(other_option)
-        self.selected -= to_remove
+        a_retirer = set(options)
+        termine = False
+        while not termine:
+            termine = True
+            for autre_option in self.selectionnees:
+                if a_retirer & self.jeu_regles.calcule_dependances(autre_option):
+                    if autre_option not in a_retirer:
+                        termine = False
+                    a_retirer.add(autre_option)
+        self.selectionnees -= a_retirer
 
-    def toggle(self, option: T) -> None:
-        if option in self.selected:
-            self.remove_dependents({option})
+    def bascule(self, option: T) -> None:
+        if option in self.selectionnees:
+            self.retire_dependants({option})
         else:
-            deps = self.rule_set.compute_deps(option)
-            self.remove_dependents(
-                set.union(*[self.rule_set.conflicts[d] for d in deps])
+            dependances = self.jeu_regles.calcule_dependances(option)
+            self.retire_dependants(
+                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
             )
-            self.selected |= deps
+            self.selectionnees |= dependances
 ```
 
 `ruff check --fix` corrige seul l'import inutilisé et le `not in`.
@@ -265,14 +265,14 @@ class Options[T: Hashable]:
 extend-select = ["ANN", "E7", "T20"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/rules.py" = ["T201"]
+"src/linting/demo.py" = ["T201"]
 ```
 
-`ruff` écrit lui-même les `# noqa: T201` de `code_to_type.py`&nbsp;; à la main, c'est le
+`ruff` écrit lui-même les `# noqa: T201` de `code_a_typer.py`&nbsp;; à la main, c'est le
 même commentaire.
 
 ```console
-uv run ruff check --select T20 --add-noqa src/linting/code_to_type.py
+uv run ruff check --select T20 --add-noqa src/linting/code_a_typer.py
 uv run ruff check
 ```
 
@@ -285,16 +285,16 @@ l'écriture. Une option très intéressante est de déléguer complètement cett
 outil dédié&nbsp;: en Python, `ruff` peut s'en charger. Dans le Codespace, l'éditeur est
 déjà configuré pour lancer `ruff format` à chaque sauvegarde.
 
-`src/linting/rules.py` a été écrit à la main, sans formateur&nbsp;: `uv run ruff format
+`src/linting/demo.py` a été écrit à la main, sans formateur&nbsp;: `uv run ruff format
 --check` échoue. Voyez ce que `uv run ruff format --diff` propose de changer, et
 appliquez-le avec `uv run ruff format`. Le formateur ne décide pourtant pas de tout.
 Relisez le fichier&nbsp;:
 
-1. Des deux appels à `add_conflict` coupés sur plusieurs lignes, un seul l'est resté.
+1. Des deux appels à `ajoute_conflit` coupés sur plusieurs lignes, un seul l'est resté.
    Qu'est-ce qui les distingue&nbsp;? Faites que l'autre le reste aussi.
-2. Le formateur a défait l'alignement de la table `deps`, qui se lisait en colonnes.
-   Rétablissez-le, et protégez cette instruction pour que `uv run ruff format --check`
-   passe.
+2. Le formateur a défait l'alignement de la table `dependances`, qui se lisait en
+   colonnes. Rétablissez-le, et protégez cette instruction pour que
+   `uv run ruff format --check` passe.
 
 Dans le Codespace, sauvegardez le fichier après avoir rétabli l'alignement, sans le
 protéger d'abord&nbsp;: que se passe-t-il&nbsp;?
@@ -314,11 +314,11 @@ lignes de plus de 88 caractères. Il rejoint aussi sur une ligne ce qui y tient,
 le dernier élément est suivi d'une virgule&nbsp;: cette virgule finale, dite magique,
 lui demande de garder un élément par ligne. Un commentaire `# fmt: skip` à la fin d'une
 instruction, après son dernier crochet, lui fait laisser celle-ci telle quelle. `git
-diff src/linting/rules.py` montre l'alignement d'origine.
+diff src/linting/demo.py` montre l'alignement d'origine.
 
 ```python
-deps = [
-    ("color",    "terminal"),
+dependances = [
+    ("couleur",  "terminal"),
     ...
 ]  # fmt: skip
 ```
@@ -334,56 +334,56 @@ uv run ruff format --diff
 uv run ruff format
 ```
 
-`src/linting/rules.py`&nbsp;:
+`src/linting/demo.py`&nbsp;:
 
 ```python
-"""Usage of options.py and ruleset.py."""
+"""Utilisation de options.py et regles.py."""
 
 from .options import Options
-from .ruleset import RuleSet
+from .regles import JeuRegles
 
 if __name__ == "__main__":
-    rs: RuleSet[str] = RuleSet()
-    rs.add_dep("A", "B")
-    rs.add_dep("B", "C")
-    rs.add_dep("C", "D")
+    jeu: JeuRegles[str] = JeuRegles()
+    jeu.ajoute_dependance("A", "B")
+    jeu.ajoute_dependance("B", "C")
+    jeu.ajoute_dependance("C", "D")
 
-    options: Options[str] = Options(rs)
-    options.toggle("A")
-    print(options.selected)
-    options.toggle("D")
-    print(options.selected)
+    options: Options[str] = Options(jeu)
+    options.bascule("A")
+    print(options.selectionnees)
+    options.bascule("D")
+    print(options.selectionnees)
 
-    rs2: RuleSet[int] = RuleSet()
-    rs2.add_dep(1, 2)
-    rs2.add_dep(2, 3)
-    rs2.add_dep(3, 4)
+    jeu2: JeuRegles[int] = JeuRegles()
+    jeu2.ajoute_dependance(1, 2)
+    jeu2.ajoute_dependance(2, 3)
+    jeu2.ajoute_dependance(3, 4)
 
-    options2: Options[int] = Options(rs2)
-    options2.toggle(1)
-    print(options2.selected)
+    options2: Options[int] = Options(jeu2)
+    options2.bascule(1)
+    print(options2.selectionnees)
 
-    rs3: RuleSet[str] = RuleSet()
-    deps = [
-        ("color",    "terminal"),
+    jeu3: JeuRegles[str] = JeuRegles()
+    dependances = [
+        ("couleur",  "terminal"),
         ("unicode",  "terminal"),
-        ("terminal", "output"),
+        ("terminal", "sortie"),
     ]  # fmt: skip
-    for a, b in deps:
-        rs3.add_dep(a, b)
-    rs3.add_conflict(
-        "color",
-        "plain",
+    for a, b in dependances:
+        jeu3.ajoute_dependance(a, b)
+    jeu3.ajoute_conflit(
+        "couleur",
+        "brut",
     )
-    rs3.add_conflict(
+    jeu3.ajoute_conflit(
         "unicode",
         "ascii",
     )
 
-    options3: Options[str] = Options(rs3)
-    options3.toggle("plain")
-    options3.toggle("color")
-    print(options3.selected)
+    options3: Options[str] = Options(jeu3)
+    options3.bascule("brut")
+    options3.bascule("couleur")
+    print(options3.selectionnees)
 ```
 
 L'appel resté coupé a une virgule après son dernier argument, la virgule finale
@@ -392,7 +392,7 @@ skip` laisse telle quelle l'instruction qu'il termine.
 
 ```console
 uv run ruff format --check
-uv run python -m linting.rules
+uv run python -m linting.demo
 ```
 
 Dans le Codespace, la sauvegarde formate le fichier aussitôt (le réglage
@@ -411,9 +411,9 @@ admise&nbsp;: `uv run ruff check` signale alors une méthode de
 `options.py`.
 
 Réécrivez cette méthode pour que `max-complexity = 4` passe, sans changer son
-résultat&nbsp;: le `options.toggle("D")` de `rules.py` doit toujours vider la sélection
-(`uv run python -m linting.rules` affiche `set()` en deuxième ligne). Gardez cette
-valeur pour la suite des travaux pratiques.
+résultat&nbsp;: le `options.bascule("D")` de `demo.py` doit toujours vider la sélection
+(`uv run python -m linting.demo` affiche `set()` en deuxième ligne). Gardez cette valeur
+pour la suite des travaux pratiques.
 
 **Documentation utile**
 
@@ -424,17 +424,17 @@ valeur pour la suite des travaux pratiques.
 <summary>Conseils supplémentaires</summary>
 
 La règle s'ajoute à la liste `extend-select` de la table `[tool.ruff.lint]`, et l'option
-se règle dans une table `[tool.ruff.lint.mccabe]`. `remove_dependents` a une complexité
+se règle dans une table `[tool.ruff.lint.mccabe]`. `retire_dependants` a une complexité
 de 5&nbsp;: une boucle `while`, une boucle `for` et deux `if` imbriqués. Déplacer une
 boucle dans une autre méthode ferait passer la règle sans simplifier le code. Regardez
-plutôt ce que renvoie `compute_deps`&nbsp;: toutes les dépendances d'une option,
+plutôt ce que renvoie `calcule_dependances`&nbsp;: toutes les dépendances d'une option,
 directes ou non, et l'option elle-même. Une seule lecture de la sélection suffit donc à
 trouver les options à retirer&nbsp;: le `while` n'a pas lieu d'être.
 
 ```python
-def remove_dependents(self, options: Iterable[T]) -> None:
-    to_remove = set(options)
-    self.selected -= {other_option for other_option in self.selected if ...}
+def retire_dependants(self, options: Iterable[T]) -> None:
+    a_retirer = set(options)
+    self.selectionnees -= {autre_option for autre_option in self.selectionnees if ...}
 ```
 
 ```toml
@@ -460,68 +460,68 @@ extend-select = ["ANN", "C901", "E7", "T20"]
 max-complexity = 4
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/rules.py" = ["T201"]
+"src/linting/demo.py" = ["T201"]
 ```
 
 `src/linting/options.py`&nbsp;:
 
 ```python
-"""Options management."""
+"""Gestion des options."""
 
 from collections.abc import Hashable, Iterable
 
-from .ruleset import RuleSet
+from .regles import JeuRegles
 
 
 class Options[T: Hashable]:
-    """Options management."""
+    """Gestion des options."""
 
-    def __init__(self, rule_set: RuleSet[T]) -> None:
-        """Initialize a set of options.
+    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
+        """Initialise un ensemble d'options.
 
         Args:
-            rule_set: RuleSet to use to model dependencies.
+            jeu_regles: Jeu de règles qui modélise les dépendances.
         """
-        self.rule_set = rule_set
-        self.selected: set[T] = set()
+        self.jeu_regles = jeu_regles
+        self.selectionnees: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Return a view of the selected options.
+        """Renvoie une vue des options sélectionnées.
 
         Yields:
-            Set of selected options.
+            Ensemble des options sélectionnées.
         """
-        return set(self.selected)
+        return set(self.selectionnees)
 
-    def remove_dependents(self, options: Iterable[T]) -> None:
-        """Remove options and their dependents from the selection.
+    def retire_dependants(self, options: Iterable[T]) -> None:
+        """Retire des options et leurs dépendants de la sélection.
 
         Args:
-            option: Options from which to compute the dependents to remove.
+            option: Options dont calculer les dépendants à retirer.
         """
-        to_remove = set(options)
-        self.selected -= {
-            other_option
-            for other_option in self.selected
-            if to_remove & self.rule_set.compute_deps(other_option)
+        a_retirer = set(options)
+        self.selectionnees -= {
+            autre_option
+            for autre_option in self.selectionnees
+            if a_retirer & self.jeu_regles.calcule_dependances(autre_option)
         }
 
-    def toggle(self, option: T) -> None:
-        if option in self.selected:
-            self.remove_dependents({option})
+    def bascule(self, option: T) -> None:
+        if option in self.selectionnees:
+            self.retire_dependants({option})
         else:
-            deps = self.rule_set.compute_deps(option)
-            self.remove_dependents(
-                set.union(*[self.rule_set.conflicts[d] for d in deps])
+            dependances = self.jeu_regles.calcule_dependances(option)
+            self.retire_dependants(
+                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
             )
-            self.selected |= deps
+            self.selectionnees |= dependances
 ```
 
-`remove_dependents` n'a plus de boucle `while`, ni de `if` imbriqués.
+`retire_dependants` n'a plus de boucle `while`, ni de `if` imbriqués.
 
 ```console
 uv run ruff check
-uv run python -m linting.rules
+uv run python -m linting.demo
 ```
 
 </details>
@@ -577,7 +577,7 @@ extend-select = ["ANN", "C901", "D", "DOC", "E7", "T20"]
 max-complexity = 4
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/rules.py" = ["T201"]
+"src/linting/demo.py" = ["T201"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -586,60 +586,60 @@ convention = "google"
 `src/linting/options.py`&nbsp;:
 
 ```python
-"""Options management."""
+"""Gestion des options."""
 
 from collections.abc import Hashable, Iterable
 
-from .ruleset import RuleSet
+from .regles import JeuRegles
 
 
 class Options[T: Hashable]:
-    """Options management."""
+    """Gestion des options."""
 
-    def __init__(self, rule_set: RuleSet[T]) -> None:
-        """Initialize a set of options.
+    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
+        """Initialise un ensemble d'options.
 
         Args:
-            rule_set: RuleSet to use to model dependencies.
+            jeu_regles: Jeu de règles qui modélise les dépendances.
         """
-        self.rule_set = rule_set
-        self.selected: set[T] = set()
+        self.jeu_regles = jeu_regles
+        self.selectionnees: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Return a view of the selected options.
+        """Renvoie une vue des options sélectionnées.
 
         Returns:
-            Set of selected options.
+            Ensemble des options sélectionnées.
         """
-        return set(self.selected)
+        return set(self.selectionnees)
 
-    def remove_dependents(self, options: Iterable[T]) -> None:
-        """Remove options and their dependents from the selection.
+    def retire_dependants(self, options: Iterable[T]) -> None:
+        """Retire des options et leurs dépendants de la sélection.
 
         Args:
-            options: Options from which to compute the dependents to remove.
+            options: Options dont calculer les dépendants à retirer.
         """
-        to_remove = set(options)
-        self.selected -= {
-            other_option
-            for other_option in self.selected
-            if to_remove & self.rule_set.compute_deps(other_option)
+        a_retirer = set(options)
+        self.selectionnees -= {
+            autre_option
+            for autre_option in self.selectionnees
+            if a_retirer & self.jeu_regles.calcule_dependances(autre_option)
         }
 
-    def toggle(self, option: T) -> None:
-        """Toggle an option, with its dependencies and dependents.
+    def bascule(self, option: T) -> None:
+        """Bascule une option, avec ses dépendances et ses dépendants.
 
         Args:
-            option: Option to toggle.
+            option: Option à basculer.
         """
-        if option in self.selected:
-            self.remove_dependents({option})
+        if option in self.selectionnees:
+            self.retire_dependants({option})
         else:
-            deps = self.rule_set.compute_deps(option)
-            self.remove_dependents(
-                set.union(*[self.rule_set.conflicts[d] for d in deps])
+            dependances = self.jeu_regles.calcule_dependances(option)
+            self.retire_dependants(
+                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
             )
-            self.selected |= deps
+            self.selectionnees |= dependances
 ```
 
 ```console

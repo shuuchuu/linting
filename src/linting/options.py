@@ -1,54 +1,54 @@
-"""Options management."""
+"""Gestion des options."""
 
 from collections.abc import Hashable, Iterable
 from typing import Any
 
-from .ruleset import RuleSet
+from .regles import JeuRegles
 
 
 class Options[T: Hashable]:
-    """Options management."""
+    """Gestion des options."""
 
-    def __init__(self, rule_set: RuleSet[T]) -> None:
-        """Initialize a set of options.
+    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
+        """Initialise un ensemble d'options.
 
         Args:
-            rule_set: RuleSet to use to model dependencies.
+            jeu_regles: Jeu de règles qui modélise les dépendances.
         """
-        self.rule_set = rule_set
-        self.selected: set[T] = set()
+        self.jeu_regles = jeu_regles
+        self.selectionnees: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Return a view of the selected options.
+        """Renvoie une vue des options sélectionnées.
 
         Yields:
-            Set of selected options.
+            Ensemble des options sélectionnées.
         """
-        return set(self.selected)
+        return set(self.selectionnees)
 
-    def remove_dependents(self, options: Iterable[T]) -> None:
-        """Remove options and their dependents from the selection.
+    def retire_dependants(self, options: Iterable[T]) -> None:
+        """Retire des options et leurs dépendants de la sélection.
 
         Args:
-            option: Options from which to compute the dependents to remove.
+            option: Options dont calculer les dépendants à retirer.
         """
-        to_remove = set(options)
-        done = False
-        while done == False:
-            done = True
-            for other_option in self.selected:
-                if to_remove & self.rule_set.compute_deps(other_option):
-                    if not other_option in to_remove:
-                        done = False
-                    to_remove.add(other_option)
-        self.selected -= to_remove
+        a_retirer = set(options)
+        termine = False
+        while termine == False:
+            termine = True
+            for autre_option in self.selectionnees:
+                if a_retirer & self.jeu_regles.calcule_dependances(autre_option):
+                    if not autre_option in a_retirer:
+                        termine = False
+                    a_retirer.add(autre_option)
+        self.selectionnees -= a_retirer
 
-    def toggle(self, option: T) -> None:
-        if option in self.selected:
-            self.remove_dependents({option})
+    def bascule(self, option: T) -> None:
+        if option in self.selectionnees:
+            self.retire_dependants({option})
         else:
-            deps = self.rule_set.compute_deps(option)
-            self.remove_dependents(
-                set.union(*[self.rule_set.conflicts[d] for d in deps])
+            dependances = self.jeu_regles.calcule_dependances(option)
+            self.retire_dependants(
+                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
             )
-            self.selected |= deps
+            self.selectionnees |= dependances
