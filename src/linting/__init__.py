@@ -1,4 +1,4 @@
-"""TP sur le linting en Python."""
+"""Labs on linting in Python."""
 
-nom_application = "linting"
+app_name = "linting"
 __version__ = "0.1.0"

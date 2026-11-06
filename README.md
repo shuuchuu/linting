@@ -1,77 +1,83 @@
-# Typage, détection de défauts, formatage et automatisation avec `pyrefly`, `ruff` et `pre-commit`
+# Typing, defect detection, formatting and automation with `pyrefly`, `ruff` and `pre-commit`
 
-*[English version](https://github.com/shuuchuu/linting/tree/main-en)*
+*[Version française](https://github.com/shuuchuu/linting)*
 
-Le projet des travaux pratiques *Typage, détection de défauts, formatage et
-automatisation*. Leur énoncé est ci-dessous, pour les faire dans un Codespace GitHub ou
-un clone local&nbsp;; c'est le même que celui du notebook des travaux pratiques, en
-[français](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-fr.ipynb)
-ou en
-[anglais](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-en.ipynb),
-qui les fait dans Colab.
+The project of the *Typing, defect detection, formatting and automation* lab. Its
+instructions are below, to run the lab in a GitHub Codespace or a local clone; they are
+the same as the lab's notebook, in
+[English](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-en.ipynb)
+or in
+[French](https://colab.research.google.com/github/shuuchuu/labs/blob/main/linting-hands-on-fr.ipynb),
+which runs it in Colab.
 
-Le paquet `linting` (dans `src/linting/`) gère des options qui dépendent les unes des
-autres&nbsp;: `regles.py` déclare les dépendances et les conflits, `options.py` tient la
-sélection à jour, et `code_a_typer.py` réunit quelques fonctions sans annotations de
-type. Les outils sont ceux du cours&nbsp;: `ruff` (défauts et formatage), `pyrefly`
-(types) et `pre-commit` (leur automatisation).
+The `linting` package (in `src/linting/`) manages options that depend on one another:
+`ruleset.py` declares the dependencies and the conflicts, `options.py` keeps the
+selection up to date, and `code_to_type.py` holds a few functions without type
+annotations. The tools are the course's: `ruff` (defects and formatting), `pyrefly`
+(types) and `pre-commit` (their automation).
 
-Les exercices se suivent&nbsp;: le premier, le typage, ne demande que `pyrefly`, puis
-`pyproject.toml` s'enrichit de l'un à l'autre, et le dernier suppose les précédents
-faits.
+The exercises follow one another: the first, typing, needs only `pyrefly`, then
+`pyproject.toml` grows from one to the next, and the last one assumes the previous ones
+are done.
 
-## Mise en place de l'environnement de travail
+## Setting up the working environment
 
-Ouvrez le dépôt dans un Codespace&nbsp;: sur GitHub, **Code** > **Codespaces** >
-**Create codespace on main**, ou [ce lien](https://codespaces.new/shuuchuu/linting). Le
-Codespace installe les dépendances à sa création, dans le `.venv` du projet.
+This English version of the lab is the repository's `main-en` branch. Open it in a
+Codespace: on GitHub, on the `main-en` branch, **Code** > **Codespaces** > **Create
+codespace on main-en**, or [this
+link](https://codespaces.new/shuuchuu/linting/tree/main-en). The Codespace installs the
+dependencies when it is created, in the project's `.venv`.
 
-Dans un clone local, installez
-[uv](https://docs.astral.sh/uv/getting-started/installation/), puis lancez `uv sync` à
-la racine du dépôt.
+In a local clone of that branch, install
+[uv](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` at the
+root of the repository:
 
-Les commandes ci-dessous se lancent dans un terminal à la racine du dépôt (**Terminal** >
-**Nouveau terminal** dans le Codespace), avec `uv run`, qui les exécute dans
-l'environnement du projet, aux versions de `ruff` et `pyrefly` que fixe `uv.lock`. Les
-fichiers se modifient dans l'éditeur. Les solutions sont aussi sur la [branche
-`solution`](https://github.com/shuuchuu/linting/tree/solution) du dépôt.
+```console
+git clone -b main-en https://github.com/shuuchuu/linting.git
+cd linting
+uv sync
+```
 
-## Typage des fonctions
+The commands below run in a terminal at the root of the repository (**Terminal** > **New
+Terminal** in the Codespace), through `uv run`, which runs them in the project's
+environment, at the versions of `ruff` and `pyrefly` that `uv.lock` pins. The files are
+edited in the editor. The solutions are also on the repository's [`solution-en`
+branch](https://github.com/shuuchuu/linting/tree/solution-en).
 
-Les fonctions de `src/linting/code_a_typer.py` n'ont pas d'annotations de type.
-Annotez-les, puis vérifiez avec `uv run pyrefly check` que les annotations sont
-cohérentes avec le code. Ajoutez enfin, à la fin du bloc `if __name__ == "__main__":`,
-un appel incorrect, `totalise(["1", "2"])`&nbsp;: que signale `pyrefly`, et que donne
-l'exécution du module (`uv run python -m linting.code_a_typer`)&nbsp;? Retirez ensuite
-cet appel.
+## Typing the functions
 
-**Documentation utile**
+The functions of `src/linting/code_to_type.py` have no type annotations. Annotate them,
+then check with `uv run pyrefly check` that the annotations agree with the code.
+Finally, add an incorrect call, `total(["1", "2"])`, at the end of the `if __name__ ==
+"__main__":` block: what does `pyrefly` report, and what does running the module (`uv
+run python -m linting.code_to_type`) give? Then remove that call.
 
-- https://docs.python.org/fr/3/library/collections.abc.html
-- https://docs.python.org/fr/3/reference/compound_stmts.html#generic-functions
+**Useful documentation**
+
+- https://docs.python.org/3/library/collections.abc.html
+- https://docs.python.org/3/reference/compound_stmts.html#generic-functions
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`additionne` additionne deux `int`, `totalise` parcourt des `int` sans avoir besoin
-d'une liste (`Iterable[int]`), et `met_en_majuscules` ne fait que lire un dictionnaire
-aux clés `str` (`Mapping[str, ...]`). Ses valeurs peuvent être de n'importe quel type,
-que le dictionnaire renvoyé conserve&nbsp;: une fonction générique,
-`def f[T](x: T) -> T`, le dit. `Iterable` et `Mapping` s'importent de `collections.abc`.
-`pyrefly` signale l'appel incorrect par une erreur `bad-argument-type`, que l'exécution
-confirme par une `TypeError`.
+`add` adds two `int`s, `total` iterates over `int`s without needing a list
+(`Iterable[int]`), and `upper_keys` only reads a dictionary with `str` keys
+(`Mapping[str, ...]`). Its values can be of any type, which the returned dictionary
+keeps: a generic function, `def f[T](x: T) -> T`, says so. `Iterable` and `Mapping` are
+imported from `collections.abc`. `pyrefly` reports the incorrect call with a
+`bad-argument-type` error, which running it confirms with a `TypeError`.
 
 ```python
 from collections.abc import Iterable, Mapping
 
 
-def additionne(a: int, b: int) -> int: ...
+def add(a: int, b: int) -> int: ...
 
 
-def totalise(nombres: Iterable[int]) -> int: ...
+def total(numbers: Iterable[int]) -> int: ...
 
 
-def met_en_majuscules[T](dictionnaire: Mapping[str, T]) -> ...: ...
+def upper_keys[T](mapping: Mapping[str, T]) -> ...: ...
 ```
 
 ```console
@@ -83,61 +89,61 @@ uv run pyrefly check
 <details>
 <summary>Solution</summary>
 
-`src/linting/code_a_typer.py`&nbsp;:
+`src/linting/code_to_type.py`:
 
 ```python
-"""Code simple à typer."""
+"""Simple code to type."""
 
 from collections.abc import Iterable, Mapping
 
 
-def additionne(a: int, b: int) -> int:
-    """Calcule la somme de deux nombres.
+def add(a: int, b: int) -> int:
+    """Compute the sum between two numbers.
 
     Args:
-        a: Premier nombre
-        b: Deuxième nombre
+        a: First number
+        b: Second number
 
     Returns:
-        Somme des deux nombres.
+        Sum of the two numbers.
     """
     return a + b
 
 
-def totalise(nombres: Iterable[int]) -> int:
-    """Calcule la somme d'un itérable de nombres.
+def total(numbers: Iterable[int]) -> int:
+    """Compute the sum of an iterable of numbers.
 
     Args:
-        nombres: Itérable de nombres
+        numbers: Iterable of numbers
 
     Returns:
-        Somme des nombres.
+        Sum of the numbers.
     """
     total = 0
-    for nombre in nombres:
-        total += nombre
+    for number in numbers:
+        total += number
     return total
 
 
-def met_en_majuscules[T](dictionnaire: Mapping[str, T]) -> dict[str, T]:
-    """Crée un dictionnaire aux clés en majuscules à partir d'un dictionnaire donné.
+def upper_keys[T](mapping: Mapping[str, T]) -> dict[str, T]:
+    """Create a dictionary with uppercase keys from a given dictionary.
 
     Args:
-        dictionnaire: Dictionnaire d'entrée
+        mapping: Input mapping
 
     Returns:
-        Dictionnaire aux clés en majuscules.
+        Dictionary with the uppercase keys.
     """
-    resultat = {}
-    for cle, valeur in dictionnaire.items():
-        resultat[cle.upper()] = valeur
-    return resultat
+    result = {}
+    for key, value in mapping.items():
+        result[key.upper()] = value
+    return result
 
 
 if __name__ == "__main__":
-    print("additionne(1, 2) →", additionne(1, 2))
-    print("totalise([1, 2, 3]) →", totalise([1, 2, 3]))
-    print('met_en_majuscules({"a": 1, "b": 2}) →', met_en_majuscules({"a": 1, "b": 2}))
+    print("add(1, 2) →", add(1, 2))
+    print("total([1, 2, 3]) →", total([1, 2, 3]))
+    print('upper_keys({"a": 1, "b": 2}) →', upper_keys({"a": 1, "b": 2}))
 ```
 
 ```console
@@ -146,51 +152,49 @@ uv run pyrefly check
 
 </details>
 
-## Détection de défauts
+## Defect detection
 
-Lancez `uv run ruff check src/linting/options.py`, lisez chaque défaut signalé (son
-code, sa ligne, sa correction proposée), puis corrigez-les. Lesquels `ruff` sait-il
-corriger seul&nbsp;?
+Run `uv run ruff check src/linting/options.py`, read each defect it reports (its code,
+its line, its suggested fix), then fix them. Which ones can `ruff` fix on its own?
 
-Tout ne se corrige pas. Dans `pyproject.toml`, ajoutez à la liste `extend-select` la
-famille `T20`, qui signale les `print`, puis lancez `uv run ruff check`. Les règles
-`ANN`, que `pyproject.toml` sélectionne déjà, signalent les annotations
-manquantes&nbsp;: elles ne relèvent rien si le premier exercice est complet. Ces `print`
-sont voulus&nbsp;: exemptez-en tout le fichier `demo.py`, qui n'est qu'une
-démonstration, et ignorez ceux de `code_a_typer.py` ligne par ligne.
+Not everything gets fixed. In `pyproject.toml`, add the `T20` family, which flags
+`print` calls, to the `extend-select` list, then run `uv run ruff check`. The `ANN`
+rules, which `pyproject.toml` already selects, flag missing annotations: they report
+nothing if the first exercise is complete. These `print` calls are intended: exempt the
+whole `rules.py` file, which is only a demonstration, and ignore those of
+`code_to_type.py` line by line.
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/linter/#fixes
 - https://docs.astral.sh/ruff/rules/print/
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-Les trois défauts sont un import inutilisé (`F401`), une comparaison à `False` (`E712`)
-et un test d'appartenance écrit `not x in y` (`E713`). `uv run ruff check --fix`
-applique les corrections sûres, marquées `[*]`&nbsp;; celle de `E712` est dite
-dangereuse (`--unsafe-fixes`), car `x == False` et `not x` diffèrent quand `x` n'est pas
-un booléen.
+The three defects are an unused import (`F401`), a comparison to `False` (`E712`) and a
+membership test written `not x in y` (`E713`). `uv run ruff check --fix` applies the
+safe fixes, marked `[*]`; `E712`'s is deemed unsafe (`--unsafe-fixes`), since `x ==
+False` and `not x` differ when `x` isn't a boolean.
 
 ```python
 while not ...:
     ...
-    if autre_option not in ...:
+    if other_option not in ...:
         ...
 ```
 
-`ruff` relève 7 `print` (`T201`)&nbsp;: 4 dans `demo.py`, 3 dans `code_a_typer.py`. Le
-premier fichier s'exempte par `per-file-ignores`, dans une table
-`[tool.ruff.lint.per-file-ignores]`, et chaque `print` du second reçoit `# noqa: T201`
-en fin de ligne.
+`ruff` reports 7 `print` calls (`T201`): 4 in `rules.py`, 3 in `code_to_type.py`. The
+first file is exempted through `per-file-ignores`, in a
+`[tool.ruff.lint.per-file-ignores]` table, and each `print` of the second one gets `#
+noqa: T201` at the end of its line.
 
 ```toml
 [tool.ruff.lint]
 extend-select = ["ANN", "E7", "T20"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/demo.py" = [...]
+"src/linting/rules.py" = [...]
 ```
 
 </details>
@@ -198,127 +202,126 @@ extend-select = ["ANN", "E7", "T20"]
 <details>
 <summary>Solution</summary>
 
-`src/linting/options.py`&nbsp;:
+`src/linting/options.py`:
 
 ```python
-"""Gestion des options."""
+"""Options management."""
 
 from collections.abc import Hashable, Iterable
 
-from .regles import JeuRegles
+from .ruleset import RuleSet
 
 
 class Options[T: Hashable]:
-    """Gestion des options."""
+    """Options management."""
 
-    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
-        """Initialise un ensemble d'options.
+    def __init__(self, rule_set: RuleSet[T]) -> None:
+        """Initialize a set of options.
 
         Args:
-            jeu_regles: Jeu de règles qui modélise les dépendances.
+            rule_set: RuleSet to use to model dependencies.
         """
-        self.jeu_regles = jeu_regles
-        self.selectionnees: set[T] = set()
+        self.rule_set = rule_set
+        self.selected: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Renvoie une vue des options sélectionnées.
+        """Return a view of the selected options.
 
         Yields:
-            Ensemble des options sélectionnées.
+            Set of selected options.
         """
-        return set(self.selectionnees)
+        return set(self.selected)
 
-    def retire_dependants(self, options: Iterable[T]) -> None:
-        """Retire des options et leurs dépendants de la sélection.
+    def remove_dependents(self, options: Iterable[T]) -> None:
+        """Remove options and their dependents from the selection.
 
         Args:
-            option: Options dont calculer les dépendants à retirer.
+            option: Options from which to compute the dependents to remove.
         """
-        a_retirer = set(options)
-        termine = False
-        while not termine:
-            termine = True
-            for autre_option in self.selectionnees:
-                if a_retirer & self.jeu_regles.calcule_dependances(autre_option):
-                    if autre_option not in a_retirer:
-                        termine = False
-                    a_retirer.add(autre_option)
-        self.selectionnees -= a_retirer
+        to_remove = set(options)
+        done = False
+        while not done:
+            done = True
+            for other_option in self.selected:
+                if to_remove & self.rule_set.compute_deps(other_option):
+                    if other_option not in to_remove:
+                        done = False
+                    to_remove.add(other_option)
+        self.selected -= to_remove
 
-    def bascule(self, option: T) -> None:
-        if option in self.selectionnees:
-            self.retire_dependants({option})
+    def toggle(self, option: T) -> None:
+        if option in self.selected:
+            self.remove_dependents({option})
         else:
-            dependances = self.jeu_regles.calcule_dependances(option)
-            self.retire_dependants(
-                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
+            deps = self.rule_set.compute_deps(option)
+            self.remove_dependents(
+                set.union(*[self.rule_set.conflicts[d] for d in deps])
             )
-            self.selectionnees |= dependances
+            self.selected |= deps
 ```
 
-`ruff check --fix` corrige seul l'import inutilisé et le `not in`.
+`ruff check --fix` fixes the unused import and the `not in` on its own.
 
-`pyproject.toml`&nbsp;:
+`pyproject.toml`:
 
 ```toml
 [tool.ruff.lint]
 extend-select = ["ANN", "E7", "T20"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/demo.py" = ["T201"]
+"src/linting/rules.py" = ["T201"]
 ```
 
-`ruff` écrit lui-même les `# noqa: T201` de `code_a_typer.py`&nbsp;; à la main, c'est le
-même commentaire.
+`ruff` writes the `# noqa: T201` comments of `code_to_type.py` itself; by hand, it's the
+same comment.
 
 ```console
-uv run ruff check --select T20 --add-noqa src/linting/code_a_typer.py
+uv run ruff check --select T20 --add-noqa src/linting/code_to_type.py
 uv run ruff check
 ```
 
 </details>
 
-## Formatage du code
+## Code formatting
 
-Le formatage du code fait perdre beaucoup de temps, en revue de code comme pendant
-l'écriture. Une option très intéressante est de déléguer complètement cette tâche à un
-outil dédié&nbsp;: en Python, `ruff` peut s'en charger. Dans le Codespace, l'éditeur est
-déjà configuré pour lancer `ruff format` à chaque sauvegarde.
+Formatting code wastes a lot of time, in code reviews as while writing it. A very
+interesting option is to delegate that task entirely to a dedicated tool: in Python,
+`ruff` can take care of it. In the Codespace, the editor is already set up to run `ruff
+format` on every save.
 
-`src/linting/demo.py` a été écrit à la main, sans formateur&nbsp;: `uv run ruff format
---check` échoue. Voyez ce que `uv run ruff format --diff` propose de changer, et
-appliquez-le avec `uv run ruff format`. Le formateur ne décide pourtant pas de tout.
-Relisez le fichier&nbsp;:
+`src/linting/rules.py` was written by hand, without a formatter: `uv run ruff format
+--check` fails. See what `uv run ruff format --diff` suggests changing, and apply it
+with `uv run ruff format`. Yet the formatter doesn't decide everything. Read the file
+again:
 
-1. Des deux appels à `ajoute_conflit` coupés sur plusieurs lignes, un seul l'est resté.
-   Qu'est-ce qui les distingue&nbsp;? Faites que l'autre le reste aussi.
-2. Le formateur a défait l'alignement de la table `dependances`, qui se lisait en
-   colonnes. Rétablissez-le, et protégez cette instruction pour que
-   `uv run ruff format --check` passe.
+1. Of the two `add_conflict` calls split over several lines, only one stayed that way.
+   What sets them apart? Make the other one stay split too.
+2. The formatter undid the alignment of the `deps` table, which read as columns. Restore
+   it, and protect that statement so that `uv run ruff format --check` passes.
 
-Dans le Codespace, sauvegardez le fichier après avoir rétabli l'alignement, sans le
-protéger d'abord&nbsp;: que se passe-t-il&nbsp;?
+In the Codespace, save the file after restoring the alignment, before protecting it:
+what happens?
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/formatter/
 - https://docs.astral.sh/ruff/formatter/#format-suppression
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`--diff` affiche les changements sans toucher aux fichiers, et `--check` dit seulement
-s'il y en a (c'est ce qu'on lance en intégration continue). Le formateur ne change pas
-ce que fait le code&nbsp;: il réindente, remet les guillemets doubles et coupe les
-lignes de plus de 88 caractères. Il rejoint aussi sur une ligne ce qui y tient, sauf si
-le dernier élément est suivi d'une virgule&nbsp;: cette virgule finale, dite magique,
-lui demande de garder un élément par ligne. Un commentaire `# fmt: skip` à la fin d'une
-instruction, après son dernier crochet, lui fait laisser celle-ci telle quelle. `git
-diff src/linting/demo.py` montre l'alignement d'origine.
+`--diff` shows the changes without touching the files, and `--check` only says whether
+there are any (that's what continuous integration runs). The formatter doesn't change
+what the code does: it reindents, restores double quotes and breaks lines longer than 88
+characters. It also joins on one line what fits there, unless the last element is
+followed by a comma: this trailing comma, known as magic, asks it to keep one element
+per line. A `# fmt: skip` comment at the end of a statement, after its last bracket,
+makes it leave that statement as it is. `git diff src/linting/rules.py` shows the
+original alignment.
 
 ```python
-dependances = [
-    ("couleur",  "terminal"),
+deps = [
+    ("color",    "terminal"),
     ...
 ]  # fmt: skip
 ```
@@ -334,107 +337,106 @@ uv run ruff format --diff
 uv run ruff format
 ```
 
-`src/linting/demo.py`&nbsp;:
+`src/linting/rules.py`:
 
 ```python
-"""Utilisation de options.py et regles.py."""
+"""Usage of options.py and ruleset.py."""
 
 from .options import Options
-from .regles import JeuRegles
+from .ruleset import RuleSet
 
 if __name__ == "__main__":
-    jeu: JeuRegles[str] = JeuRegles()
-    jeu.ajoute_dependance("A", "B")
-    jeu.ajoute_dependance("B", "C")
-    jeu.ajoute_dependance("C", "D")
+    rs: RuleSet[str] = RuleSet()
+    rs.add_dep("A", "B")
+    rs.add_dep("B", "C")
+    rs.add_dep("C", "D")
 
-    options: Options[str] = Options(jeu)
-    options.bascule("A")
-    print(options.selectionnees)
-    options.bascule("D")
-    print(options.selectionnees)
+    options: Options[str] = Options(rs)
+    options.toggle("A")
+    print(options.selected)
+    options.toggle("D")
+    print(options.selected)
 
-    jeu2: JeuRegles[int] = JeuRegles()
-    jeu2.ajoute_dependance(1, 2)
-    jeu2.ajoute_dependance(2, 3)
-    jeu2.ajoute_dependance(3, 4)
+    rs2: RuleSet[int] = RuleSet()
+    rs2.add_dep(1, 2)
+    rs2.add_dep(2, 3)
+    rs2.add_dep(3, 4)
 
-    options2: Options[int] = Options(jeu2)
-    options2.bascule(1)
-    print(options2.selectionnees)
+    options2: Options[int] = Options(rs2)
+    options2.toggle(1)
+    print(options2.selected)
 
-    jeu3: JeuRegles[str] = JeuRegles()
-    dependances = [
-        ("couleur",  "terminal"),
+    rs3: RuleSet[str] = RuleSet()
+    deps = [
+        ("color",    "terminal"),
         ("unicode",  "terminal"),
-        ("terminal", "sortie"),
+        ("terminal", "output"),
     ]  # fmt: skip
-    for a, b in dependances:
-        jeu3.ajoute_dependance(a, b)
-    jeu3.ajoute_conflit(
-        "couleur",
-        "brut",
+    for a, b in deps:
+        rs3.add_dep(a, b)
+    rs3.add_conflict(
+        "color",
+        "plain",
     )
-    jeu3.ajoute_conflit(
+    rs3.add_conflict(
         "unicode",
         "ascii",
     )
 
-    options3: Options[str] = Options(jeu3)
-    options3.bascule("brut")
-    options3.bascule("couleur")
-    print(options3.selectionnees)
+    options3: Options[str] = Options(rs3)
+    options3.toggle("plain")
+    options3.toggle("color")
+    print(options3.selected)
 ```
 
-L'appel resté coupé a une virgule après son dernier argument, la virgule finale
-magique&nbsp;: `ruff format` garde alors un argument par ligne. Pour la table, `# fmt:
-skip` laisse telle quelle l'instruction qu'il termine.
+The call that stayed split has a comma after its last argument, the magic trailing
+comma: `ruff format` then keeps one argument per line. For the table, `# fmt: skip`
+leaves the statement it ends as it is.
 
 ```console
 uv run ruff format --check
-uv run python -m linting.demo
+uv run python -m linting.rules
 ```
 
-Dans le Codespace, la sauvegarde formate le fichier aussitôt (le réglage
-`editor.formatOnSave` de `.devcontainer/devcontainer.json`)&nbsp;: sans `# fmt: skip`,
-l'alignement disparaît dès qu'on sauvegarde.
+In the Codespace, saving formats the file at once (the `editor.formatOnSave` setting of
+`.devcontainer/devcontainer.json`): without `# fmt: skip`, the alignment is gone on the
+first save.
 
 </details>
 
-## Détection de code trop complexe
+## Detecting overly complex code
 
-`ruff` détecte le code trop complexe d'après sa [complexité
-cyclomatique](https://fr.wikipedia.org/wiki/Nombre_cyclomatique), le nombre de chemins
-indépendants dans une fonction. Dans `pyproject.toml`, ajoutez la règle `C901` aux
-règles sélectionnées, et fixez à `4` l'option qui règle la complexité maximale
-admise&nbsp;: `uv run ruff check` signale alors une méthode de
-`options.py`.
+`ruff` detects overly complex code from its [cyclomatic
+complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity), the number of
+independent paths through a function. In `pyproject.toml`, add the `C901` rule to the
+selected rules, and set the option for the maximum complexity allowed to `4`: `uv run
+ruff check` then flags a method of `options.py`.
 
-Réécrivez cette méthode pour que `max-complexity = 4` passe, sans changer son
-résultat&nbsp;: le `options.bascule("D")` de `demo.py` doit toujours vider la sélection
-(`uv run python -m linting.demo` affiche `set()` en deuxième ligne). Gardez cette valeur
-pour la suite des travaux pratiques.
+Rewrite that method so that `max-complexity = 4` passes, without changing its result:
+the `options.toggle("D")` of `rules.py` must still empty the selection (`uv run python
+-m linting.rules` prints `set()` on its second line). Keep that value for the rest of
+the lab.
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/rules/complex-structure/
 - https://docs.astral.sh/ruff/settings/#lint_mccabe_max-complexity
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-La règle s'ajoute à la liste `extend-select` de la table `[tool.ruff.lint]`, et l'option
-se règle dans une table `[tool.ruff.lint.mccabe]`. `retire_dependants` a une complexité
-de 5&nbsp;: une boucle `while`, une boucle `for` et deux `if` imbriqués. Déplacer une
-boucle dans une autre méthode ferait passer la règle sans simplifier le code. Regardez
-plutôt ce que renvoie `calcule_dependances`&nbsp;: toutes les dépendances d'une option,
-directes ou non, et l'option elle-même. Une seule lecture de la sélection suffit donc à
-trouver les options à retirer&nbsp;: le `while` n'a pas lieu d'être.
+The rule goes in the `extend-select` list of the `[tool.ruff.lint]` table, and the
+option is set in a `[tool.ruff.lint.mccabe]` table. `remove_dependents` has a complexity
+of 5: a `while` loop, a `for` loop and two nested `if`s. Moving a loop to another method
+would make the rule pass without simplifying the code. Look instead at what
+`compute_deps` returns: all the dependencies of an option, direct or not, and the option
+itself. A single pass over the selection is therefore enough to find the options to
+remove: the `while` has no reason to be there.
 
 ```python
-def retire_dependants(self, options: Iterable[T]) -> None:
-    a_retirer = set(options)
-    self.selectionnees -= {autre_option for autre_option in self.selectionnees if ...}
+def remove_dependents(self, options: Iterable[T]) -> None:
+    to_remove = set(options)
+    self.selected -= {other_option for other_option in self.selected if ...}
 ```
 
 ```toml
@@ -450,7 +452,7 @@ max-complexity = ...
 <details>
 <summary>Solution</summary>
 
-`pyproject.toml`&nbsp;:
+`pyproject.toml`:
 
 ```toml
 [tool.ruff.lint]
@@ -460,97 +462,94 @@ extend-select = ["ANN", "C901", "E7", "T20"]
 max-complexity = 4
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/demo.py" = ["T201"]
+"src/linting/rules.py" = ["T201"]
 ```
 
-`src/linting/options.py`&nbsp;:
+`src/linting/options.py`:
 
 ```python
-"""Gestion des options."""
+"""Options management."""
 
 from collections.abc import Hashable, Iterable
 
-from .regles import JeuRegles
+from .ruleset import RuleSet
 
 
 class Options[T: Hashable]:
-    """Gestion des options."""
+    """Options management."""
 
-    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
-        """Initialise un ensemble d'options.
+    def __init__(self, rule_set: RuleSet[T]) -> None:
+        """Initialize a set of options.
 
         Args:
-            jeu_regles: Jeu de règles qui modélise les dépendances.
+            rule_set: RuleSet to use to model dependencies.
         """
-        self.jeu_regles = jeu_regles
-        self.selectionnees: set[T] = set()
+        self.rule_set = rule_set
+        self.selected: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Renvoie une vue des options sélectionnées.
+        """Return a view of the selected options.
 
         Yields:
-            Ensemble des options sélectionnées.
+            Set of selected options.
         """
-        return set(self.selectionnees)
+        return set(self.selected)
 
-    def retire_dependants(self, options: Iterable[T]) -> None:
-        """Retire des options et leurs dépendants de la sélection.
+    def remove_dependents(self, options: Iterable[T]) -> None:
+        """Remove options and their dependents from the selection.
 
         Args:
-            option: Options dont calculer les dépendants à retirer.
+            option: Options from which to compute the dependents to remove.
         """
-        a_retirer = set(options)
-        self.selectionnees -= {
-            autre_option
-            for autre_option in self.selectionnees
-            if a_retirer & self.jeu_regles.calcule_dependances(autre_option)
+        to_remove = set(options)
+        self.selected -= {
+            other_option
+            for other_option in self.selected
+            if to_remove & self.rule_set.compute_deps(other_option)
         }
 
-    def bascule(self, option: T) -> None:
-        if option in self.selectionnees:
-            self.retire_dependants({option})
+    def toggle(self, option: T) -> None:
+        if option in self.selected:
+            self.remove_dependents({option})
         else:
-            dependances = self.jeu_regles.calcule_dependances(option)
-            self.retire_dependants(
-                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
+            deps = self.rule_set.compute_deps(option)
+            self.remove_dependents(
+                set.union(*[self.rule_set.conflicts[d] for d in deps])
             )
-            self.selectionnees |= dependances
+            self.selected |= deps
 ```
 
-`retire_dependants` n'a plus de boucle `while`, ni de `if` imbriqués.
+`remove_dependents` no longer has a `while` loop, nor nested `if`s.
 
 ```console
 uv run ruff check
-uv run python -m linting.demo
+uv run python -m linting.rules
 ```
 
 </details>
 
-## Qualité de la documentation
+## Documentation quality
 
-La documentation est une partie très importante du code. Pour lutter contre la dérive de
-la documentation, son obsolescence progressive par rapport au code, il est important de
-s'outiller.
+Documentation is a very important part of code. To fight documentation drift, its
+gradual obsolescence with respect to the code, tooling matters.
 
-Dans `pyproject.toml`, ajoutez les règles `D` et `DOC` aux règles sélectionnées, activez
-le mode *preview* de `ruff` (`preview = true`, dont les règles `DOC` ont besoin) et
-configurez le style des docstrings pour utiliser le style `google`. Corrigez ensuite les
-défauts que `uv run ruff check` relève.
+In `pyproject.toml`, add the `D` and `DOC` rules to the selected rules, turn on `ruff`'s
+*preview* mode (`preview = true`, which the `DOC` rules need) and set the docstring
+convention to the `google` style. Then fix the defects that `uv run ruff check` reports.
 
-**Documentation utile**
+**Useful documentation**
 
 - https://docs.astral.sh/ruff/settings/#lint_preview
 - https://docs.astral.sh/ruff/settings/#lint_pydocstyle_convention
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-`ruff` relève cinq défauts, tous dans `options.py`&nbsp;: une section `Yields` dans
-une fonction qui renvoie sa valeur, qui en compte deux (la section `Yields` en trop, la
-section `Returns` qui manque), un paramètre documenté sous un autre nom que le sien, le
-même paramètre donc non documenté, et une méthode publique sans docstring. En mode *preview*, le rapport donne le nom de chaque règle au lieu de son
-code&nbsp;: `uv run ruff rule docstring-extraneous-yields` donne le code, celui
-qu'attend `# noqa`.
+`ruff` reports four defects, all in `options.py`: a `Yields` section in a function that
+returns its value (`Returns`), a parameter documented under another name than its own,
+the same parameter therefore undocumented, and a public method without a docstring. In
+*preview* mode, the report gives each rule's name instead of its code: `uv run ruff rule
+docstring-extraneous-yields` gives the code, the one `# noqa` expects.
 
 ```toml
 [tool.ruff.lint]
@@ -566,7 +565,7 @@ convention = ...
 <details>
 <summary>Solution</summary>
 
-`pyproject.toml`&nbsp;:
+`pyproject.toml`:
 
 ```toml
 [tool.ruff.lint]
@@ -577,69 +576,69 @@ extend-select = ["ANN", "C901", "D", "DOC", "E7", "T20"]
 max-complexity = 4
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/demo.py" = ["T201"]
+"src/linting/rules.py" = ["T201"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 ```
 
-`src/linting/options.py`&nbsp;:
+`src/linting/options.py`:
 
 ```python
-"""Gestion des options."""
+"""Options management."""
 
 from collections.abc import Hashable, Iterable
 
-from .regles import JeuRegles
+from .ruleset import RuleSet
 
 
 class Options[T: Hashable]:
-    """Gestion des options."""
+    """Options management."""
 
-    def __init__(self, jeu_regles: JeuRegles[T]) -> None:
-        """Initialise un ensemble d'options.
+    def __init__(self, rule_set: RuleSet[T]) -> None:
+        """Initialize a set of options.
 
         Args:
-            jeu_regles: Jeu de règles qui modélise les dépendances.
+            rule_set: RuleSet to use to model dependencies.
         """
-        self.jeu_regles = jeu_regles
-        self.selectionnees: set[T] = set()
+        self.rule_set = rule_set
+        self.selected: set[T] = set()
 
     def selection(self) -> set[T]:
-        """Renvoie une vue des options sélectionnées.
+        """Return a view of the selected options.
 
         Returns:
-            Ensemble des options sélectionnées.
+            Set of selected options.
         """
-        return set(self.selectionnees)
+        return set(self.selected)
 
-    def retire_dependants(self, options: Iterable[T]) -> None:
-        """Retire des options et leurs dépendants de la sélection.
+    def remove_dependents(self, options: Iterable[T]) -> None:
+        """Remove options and their dependents from the selection.
 
         Args:
-            options: Options dont calculer les dépendants à retirer.
+            options: Options from which to compute the dependents to remove.
         """
-        a_retirer = set(options)
-        self.selectionnees -= {
-            autre_option
-            for autre_option in self.selectionnees
-            if a_retirer & self.jeu_regles.calcule_dependances(autre_option)
+        to_remove = set(options)
+        self.selected -= {
+            other_option
+            for other_option in self.selected
+            if to_remove & self.rule_set.compute_deps(other_option)
         }
 
-    def bascule(self, option: T) -> None:
-        """Bascule une option, avec ses dépendances et ses dépendants.
+    def toggle(self, option: T) -> None:
+        """Toggle an option, with its dependencies and dependents.
 
         Args:
-            option: Option à basculer.
+            option: Option to toggle.
         """
-        if option in self.selectionnees:
-            self.retire_dependants({option})
+        if option in self.selected:
+            self.remove_dependents({option})
         else:
-            dependances = self.jeu_regles.calcule_dependances(option)
-            self.retire_dependants(
-                set.union(*[self.jeu_regles.conflits[d] for d in dependances])
+            deps = self.rule_set.compute_deps(option)
+            self.remove_dependents(
+                set.union(*[self.rule_set.conflicts[d] for d in deps])
             )
-            self.selectionnees |= dependances
+            self.selected |= deps
 ```
 
 ```console
@@ -648,42 +647,40 @@ uv run ruff check
 
 </details>
 
-## Automatisation des vérifications avec `pre-commit`
+## Automating the checks with `pre-commit`
 
-Plutôt que de compter sur chacun pour lancer les vérifications, faites-les tourner à
-chaque `git commit` avec `pre-commit`. Le dépôt contient déjà un fichier
-`.pre-commit-config.yaml`, avec les hooks `ruff-check`, `ruff-format` et
-`pyrefly-check`. Sa `rev` fixe une deuxième fois la version de `ruff`, que `uv.lock`
-fixe déjà&nbsp;: les deux peuvent diverger.
+Rather than counting on everyone to run the checks, run them on every `git commit` with
+`pre-commit`. The repository already holds a `.pre-commit-config.yaml` file, with the
+`ruff-check`, `ruff-format` and `pyrefly-check` hooks. Its `rev` sets `ruff`'s version a
+second time, after `uv.lock`: the two can diverge.
 
-1. Remplacez les deux hooks `ruff` par des hooks locaux (`repo: local`, `language:
-   unsupported`) qui lancent `uv run ruff`, pour que la version soit celle de `uv.lock`.
-   Qu'y gagne-t-on, qu'y perd-on&nbsp;?
-2. Installez le hook git avec `uvx pre-commit install`, puis vérifiez tout le dépôt avec
-   `uvx pre-commit run --all-files`.
-3. Ajoutez à `options.py` un import inutilisé et une erreur de typage, puis essayez de
-   commiter (`git commit -am "Essai"`)&nbsp;: observez le refus, et ce que `ruff` a
-   corrigé seul. Ajoutez ensuite, sous l'erreur de typage, la ligne `y: int = "a" #
-   pyrefly: ignore[bad-assignment]`&nbsp;: que dit `uv run pyrefly check` de ces deux
-   lignes&nbsp;? Retirez-les.
-4. Un hook se contourne (`git commit --no-verify`)&nbsp;: quelle commande lanceriez-vous
-   en intégration continue pour vérifier quand même chaque *pull request*&nbsp;?
+1. Replace the two `ruff` hooks with local hooks (`repo: local`, `language:
+   unsupported`) that run `uv run ruff`, so that the version is the one in `uv.lock`.
+   What do you gain, what do you lose?
+2. Install the git hook with `uvx pre-commit install`, then check the whole repository
+   with `uvx pre-commit run --all-files`.
+3. Add an unused import and a typing error to `options.py`, then try to commit (`git
+   commit -am "Try"`): watch the refusal, and what `ruff` fixed on its own. Then add,
+   under the typing error, the line `y: int = "a" # pyrefly: ignore[bad-assignment]`:
+   what does `uv run pyrefly check` say about these two lines? Remove them.
+4. A hook can be bypassed (`git commit --no-verify`): what command would you run in
+   continuous integration to check every pull request anyway?
 
-**Documentation utile**
+**Useful documentation**
 
 - https://pre-commit.com/#repository-local-hooks
 
 <details>
-<summary>Conseils supplémentaires</summary>
+<summary>Additional hints</summary>
 
-Un hook local se déclare sous `repo: local`, sans `rev`&nbsp;: `id` et `name` le
-nomment, `entry` est la commande à lancer, à laquelle `pre-commit` ajoute les fichiers à
-vérifier, `language: unsupported` (anciennement `system`) lui dit de ne rien installer,
-et `types: [python]` de ne passer que les fichiers Python. `pyrefly-check` ne change
-pas&nbsp;: `pre-commit` l'installe dans un environnement à lui, au premier lancement, et il vérifie tout le
-projet, sans en voir les dépendances (celui-ci n'en a pas). Une erreur de typage
-s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant le
-commit refusé sont modifiés mais pas indexés&nbsp;: `git add` les ajoute.
+A local hook is declared under `repo: local`, without a `rev`: `id` and `name` name it,
+`entry` is the command to run, to which `pre-commit` adds the files to check, `language:
+unsupported` (formerly `system`) tells it to install nothing, and `types: [python]` to
+pass Python files only.
+`pyrefly-check` doesn't change: `pre-commit` installs it in an environment of its own,
+on its first run, and it checks the whole project, without seeing its dependencies (this
+one has none). A typing error is for instance `x: int = "a"`. The files `ruff` fixed
+during the refused commit are modified but not staged: `git add` stages them.
 
 ```yaml
 repos:
@@ -706,7 +703,7 @@ repos:
 <details>
 <summary>Solution</summary>
 
-`.pre-commit-config.yaml`&nbsp;:
+`.pre-commit-config.yaml`:
 
 ```yaml
 repos:
@@ -728,28 +725,27 @@ repos:
       - id: pyrefly-check
 ```
 
-Des hooks locaux, on gagne une seule version de `ruff`, celle de `uv.lock`, pour le
-hook, la ligne de commande et l'intégration continue, et plus de `rev` à tenir à jour.
-On y perd l'isolation&nbsp;: chaque poste doit avoir `uv` et l'environnement du projet,
-et `pre-commit autoupdate` ne les suit plus.
+Local hooks gain a single version of `ruff`, the one in `uv.lock`, for the hook, the
+command line and continuous integration, and no more `rev` to keep up to date. They
+lose the isolation: each machine needs `uv` and the project's environment, and
+`pre-commit autoupdate` no longer follows them.
 
 ```console
 uvx pre-commit install
 uvx pre-commit run --all-files
 git add --all
-git commit -m "Vérifier le code à chaque commit"
+git commit -m "Check the code on every commit"
 ```
 
-Après l'ajout d'un import inutilisé et de `x: int = "a"` à `options.py`, `git commit -am
-"Essai"` est refusé&nbsp;: `ruff-check` a retiré l'import (le fichier est modifié, à
-indexer de nouveau), et `pyrefly` signale l'erreur de typage (`bad-assignment`), qu'il
-faut corriger à la main. Avec la ligne ignorée en plus, `uv run pyrefly check` dit `1
-error (1 suppressed)`.
+After adding an unused import and `x: int = "a"` to `options.py`, `git commit -am "Try"`
+is refused: `ruff-check` removed the import (the file is modified, to stage again), and
+`pyrefly` reports the typing error (`bad-assignment`), to fix by hand. With the ignored
+line as well, `uv run pyrefly check` says `1 error (1 suppressed)`.
 
-En intégration continue, `uvx pre-commit run --all-files` lance les mêmes hooks sur
-tout le dépôt, et échoue si l'un d'eux échoue, qu'on ait commité avec `--no-verify` ou
-non. Les commandes `uv run ruff check`, `uv run ruff format --check` et `uv run pyrefly
-check` conviennent aussi&nbsp;: elles ne corrigent rien, là où le hook lance `--fix`, et
-`pyrefly` y tourne à la version de `uv.lock`, avec les dépendances du projet.
+In continuous integration, `uvx pre-commit run --all-files` runs the same hooks on the
+whole repository, and fails if one of them fails, whether `--no-verify` was used or
+not. The commands `uv run ruff check`, `uv run ruff format --check` and `uv run pyrefly
+check` work too: they fix nothing, where the hook runs `--fix`, and `pyrefly` runs at
+the version in `uv.lock`, with the project's dependencies.
 
 </details>
