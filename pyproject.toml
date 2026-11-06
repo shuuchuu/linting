@@ -28,7 +28,7 @@ extend-select = ["ANN", "C901", "D", "DOC", "E7", "T20"]
 max-complexity = 4
 
 [tool.ruff.lint.per-file-ignores]
-"src/linting/demo.py" = ["T201"]
+"src/linting/rules.py" = ["T201"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
