@@ -545,10 +545,10 @@ défauts que `uv run ruff check` relève.
 <details>
 <summary>Conseils supplémentaires</summary>
 
-`ruff` relève quatre défauts, tous dans `options.py`&nbsp;: une section `Yields` dans
-une fonction qui renvoie sa valeur (`Returns`), un paramètre documenté sous un autre nom
-que le sien, le même paramètre donc non documenté, et une méthode publique sans
-docstring. En mode *preview*, le rapport donne le nom de chaque règle au lieu de son
+`ruff` relève cinq défauts, tous dans `options.py`&nbsp;: une section `Yields` dans
+une fonction qui renvoie sa valeur, qui en compte deux (la section `Yields` en trop, la
+section `Returns` qui manque), un paramètre documenté sous un autre nom que le sien, le
+même paramètre donc non documenté, et une méthode publique sans docstring. En mode *preview*, le rapport donne le nom de chaque règle au lieu de son
 code&nbsp;: `uv run ruff rule docstring-extraneous-yields` donne le code, celui
 qu'attend `# noqa`.
 
