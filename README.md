@@ -657,8 +657,8 @@ chaque `git commit` avec `pre-commit`. Le dépôt contient déjà un fichier
 fixe déjà&nbsp;: les deux peuvent diverger.
 
 1. Remplacez les deux hooks `ruff` par des hooks locaux (`repo: local`, `language:
-   system`) qui lancent `uv run ruff`, pour que la version soit celle de `uv.lock`. Qu'y
-   gagne-t-on, qu'y perd-on&nbsp;?
+   unsupported`) qui lancent `uv run ruff`, pour que la version soit celle de `uv.lock`.
+   Qu'y gagne-t-on, qu'y perd-on&nbsp;?
 2. Installez le hook git avec `uvx pre-commit install`, puis vérifiez tout le dépôt avec
    `uvx pre-commit run --all-files`.
 3. Ajoutez à `options.py` un import inutilisé et une erreur de typage, puis essayez de
@@ -678,9 +678,9 @@ fixe déjà&nbsp;: les deux peuvent diverger.
 
 Un hook local se déclare sous `repo: local`, sans `rev`&nbsp;: `id` et `name` le
 nomment, `entry` est la commande à lancer, à laquelle `pre-commit` ajoute les fichiers à
-vérifier, `language: system` lui dit de ne rien installer, et `types: [python]` de ne
-passer que les fichiers Python. `pyrefly-check` ne change pas&nbsp;: `pre-commit`
-l'installe dans un environnement à lui, au premier lancement, et il vérifie tout le
+vérifier, `language: unsupported` (anciennement `system`) lui dit de ne rien installer,
+et `types: [python]` de ne passer que les fichiers Python. `pyrefly-check` ne change
+pas&nbsp;: `pre-commit` l'installe dans un environnement à lui, au premier lancement, et il vérifie tout le
 projet, sans en voir les dépendances (celui-ci n'en a pas). Une erreur de typage
 s'obtient par exemple avec `x: int = "a"`. Les fichiers que `ruff` a corrigés pendant le
 commit refusé sont modifiés mais pas indexés&nbsp;: `git add` les ajoute.
@@ -692,7 +692,7 @@ repos:
       - id: ruff-check
         name: ruff check
         entry: uv run ruff check --fix
-        language: system
+        language: unsupported
         types: [python]
       - id: ...
   - repo: https://github.com/meta/pyrefly-pre-commit
@@ -715,12 +715,12 @@ repos:
       - id: ruff-check
         name: ruff check
         entry: uv run ruff check --fix
-        language: system
+        language: unsupported
         types: [python]
       - id: ruff-format
         name: ruff format
         entry: uv run ruff format
-        language: system
+        language: unsupported
         types: [python]
   - repo: https://github.com/meta/pyrefly-pre-commit
     rev: 1.4.0
